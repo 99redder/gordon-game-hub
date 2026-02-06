@@ -72,9 +72,18 @@ function setupMusic() {
   const audio = $('#bgMusic');
   const toggle = $('#musicToggle');
 
-  const saved = localStorage.getItem('ggh_music') || 'off';
+  const saved = localStorage.getItem('ggh_music') || 'on';
   state.musicEnabled = saved === 'on';
   renderMusicButton();
+
+  // iPad/iOS blocks autoplay until a user gesture.
+  // We'll attempt to start as soon as the user taps anywhere if music is enabled.
+  const tryAutostart = () => {
+    if (!state.musicEnabled) return;
+    start();
+    window.removeEventListener('pointerdown', tryAutostart, { capture: true });
+  };
+  window.addEventListener('pointerdown', tryAutostart, { capture: true, once: true });
 
   async function start() {
     try {
@@ -129,7 +138,7 @@ function setupGameTransitions() {
       e.preventDefault();
 
       // Show app-like transition
-      const label = a.querySelector('.gameName')?.textContent?.trim() || 'Game';
+      const label = a.getAttribute('data-label') || a.getAttribute('aria-label') || 'Game';
       text.textContent = `Loading ${label}…`;
       overlay.classList.add('show');
 

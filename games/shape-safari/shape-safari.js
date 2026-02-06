@@ -74,11 +74,21 @@ function flash(btn, kind) {
   window.setTimeout(() => btn.classList.remove(kind), 240);
 }
 
+function celebrate() {
+  const confetti = $('#confetti');
+  if (!confetti) return;
+  confetti.classList.remove('show');
+  // retrigger
+  void confetti.offsetWidth;
+  confetti.classList.add('show');
+}
+
 function handlePick(btn, shape) {
   if (shape.key === state.target.key) {
     state.score += 1;
     $('#score').textContent = String(state.score);
     flash(btn, 'good');
+    celebrate();
     window.setTimeout(() => {
       pickTarget();
       renderGrid();

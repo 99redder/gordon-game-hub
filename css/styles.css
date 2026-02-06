@@ -228,6 +228,58 @@ body{
   100%{transform:rotate(0deg)}
 }
 
+/* App-like transition overlay */
+.transitionOverlay{
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: rgba(4, 16, 28, 0.0);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease, background 220ms ease;
+}
+.transitionOverlay.show{
+  opacity: 1;
+  pointer-events: auto;
+  background: rgba(4, 16, 28, 0.25);
+}
+.transitionCard{
+  background: rgba(255,255,255,0.86);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 22px;
+  padding: 16px 18px;
+  min-width: 220px;
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  box-shadow: 0 18px 46px rgba(0,0,0,0.18);
+  backdrop-filter: blur(10px);
+}
+.spinner{
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 3px solid rgba(14,165,233,0.25);
+  border-top-color: rgba(14,165,233,1);
+  animation: spin 0.75s linear infinite;
+}
+@keyframes spin{ to { transform: rotate(360deg); } }
+.transitionText{
+  font-family: "Fredoka", ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight: 800;
+  color: #06233b;
+}
+
+/* reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce){
+  .clouds{ animation: none; }
+  .spinner{ animation: none; }
+  .gameCard{ transition: none; }
+  .transitionOverlay{ transition: none; }
+}
+
 @media (max-width: 860px){
   body{overflow:auto}
   .main{grid-template-columns: 1fr;}

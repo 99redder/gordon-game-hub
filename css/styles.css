@@ -16,7 +16,8 @@ body{
   overflow:hidden;
 }
 
-/* soft animated clouds (more cloud-like puffs) */
+/* soft animated clouds (more cloud-like puffs)
+   Keep clouds BEHIND the UI. */
 .clouds{
   position: fixed;
   inset: 0;
@@ -24,6 +25,7 @@ body{
   opacity: 0.75;
   filter: blur(0.35px);
   overflow: hidden;
+  z-index: 0;
 }
 
 /* Big soft cloud layer */
@@ -72,6 +74,8 @@ body{
 }
 
 .shell{
+  position: relative;
+  z-index: 1;
   height:100%;
   display:flex;
   flex-direction:column;

@@ -1,5 +1,5 @@
 /* Gordon Game Hub service worker (basic offline cache) */
-const CACHE_NAME = 'gordon-game-hub-v1';
+const CACHE_NAME = 'gordon-game-hub-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -9,6 +9,7 @@ const ASSETS = [
   './css/styles.css',
   './js/app.js',
   './js/messages.js',
+  './js/firebase-config.js',
   './icons/icon.svg',
   './assets/music.mp3',
   './assets/MUSIC_LICENSE.txt'
@@ -34,6 +35,13 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   // Only handle GET
   if (req.method !== 'GET') return;
+
+  // Don't cache Firebase API calls
+  const reqUrl = new URL(req.url);
+  if (reqUrl.hostname.includes('firebaseio.com') ||
+      reqUrl.hostname.includes('googleapis.com')) {
+    return;
+  }
 
   event.respondWith((async () => {
     const cached = await caches.match(req);

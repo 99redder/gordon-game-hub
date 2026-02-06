@@ -35,15 +35,38 @@
       <header class="topbar">
         <div class="brand" aria-label="Gordon Game Hub">
           <div class="brandBadge" aria-hidden="true">
-            <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="2" y="2" width="44" height="44" rx="6" fill="#0f0f23" stroke="#ff006e" stroke-width="2"/>
-              <path d="M8 32 L16 20 L22 26 L32 12 L40 18" stroke="#39ff14" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="16" cy="20" r="3" fill="#39ff14"/>
-              <circle cx="32" cy="12" r="3" fill="#39ff14"/>
+            <svg width="56" height="56" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="badgeSky" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stop-color="#7dd3fc"/>
+                  <stop offset="1" stop-color="#fbcfe8"/>
+                </linearGradient>
+              </defs>
+              <rect x="4" y="4" width="56" height="56" rx="18" fill="url(#badgeSky)"/>
+              <path d="M32 8 L39 24 L56 24 L42 35 L47 52 L32 42 L17 52 L22 35 L8 24 L25 24 Z" fill="#fbbf24" stroke="#f97316" stroke-width="2" stroke-linejoin="round"/>
+              <circle cx="26" cy="30" r="3" fill="#0f172a"/>
+              <circle cx="38" cy="30" r="3" fill="#0f172a"/>
+              <path d="M24 36 C28 42 36 42 40 36" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
             </svg>
           </div>
           <div class="brandTitle">
-            <span class="logoText">Gordon Game Hub</span>
+            <span class="logoText" aria-label="Gordon Game Hub">
+              <span class="logoLetter" aria-hidden="true">G</span>
+              <span class="logoLetter" aria-hidden="true">o</span>
+              <span class="logoLetter" aria-hidden="true">r</span>
+              <span class="logoLetter" aria-hidden="true">d</span>
+              <span class="logoLetter" aria-hidden="true">o</span>
+              <span class="logoLetter" aria-hidden="true">n</span>
+              <span class="logoLetter logoSpace" aria-hidden="true">&nbsp;</span>
+              <span class="logoLetter" aria-hidden="true">G</span>
+              <span class="logoLetter" aria-hidden="true">a</span>
+              <span class="logoLetter" aria-hidden="true">m</span>
+              <span class="logoLetter" aria-hidden="true">e</span>
+              <span class="logoLetter logoSpace" aria-hidden="true">&nbsp;</span>
+              <span class="logoLetter" aria-hidden="true">H</span>
+              <span class="logoLetter" aria-hidden="true">u</span>
+              <span class="logoLetter" aria-hidden="true">b</span>
+            </span>
             <span class="logoSub">tap a game • have fun</span>
           </div>
         </div>
@@ -59,7 +82,7 @@
           <div class="grid" role="list">
             <!-- Big icon-only game launchers -->
             <a class="gameIconLink gameLink" role="listitem" href="https://99redder.github.io/bucketgame/" data-url="https://99redder.github.io/bucketgame/" aria-label="Animal Bucket" data-label="Animal Bucket">
-              <span class="gameEmoji" aria-hidden="true">🐾</span>
+              <span class="gameEmoji" aria-hidden="true">🪣</span>
             </a>
             <a class="gameIconLink gameLink" role="listitem" href="#" data-url="#" aria-label="Game 2" data-label="Game 2">
               <span class="gameEmoji" aria-hidden="true">🧩</span>
@@ -81,12 +104,11 @@
 
         <section class="panel gordonPanel" aria-label="Gordon">
           <div class="gordonWrap" id="gordon">
-            <div class="messageBoard" aria-label="Messages for Gordon">
-              <div class="messageBoardHeader">
-                <div class="messageBoardTitle">Messages for Gordon</div>
-                <div class="messageBoardSub">(added from <code>/messages.html</code>)</div>
+            <div class="messageDisplay" id="messageDisplay" aria-label="Messages for Gordon" aria-live="polite">
+              <div class="messageDisplayCard" id="messageCard">
+                <div class="messageDisplayText" id="messageText"></div>
+                <div class="messageDisplayFrom" id="messageFrom"></div>
               </div>
-              <div class="messageList" id="messageList" role="list"></div>
             </div>
 
             <div class="speech" id="bubble">Tap Gordon to say hello!</div>
@@ -154,6 +176,10 @@
       <source src="./assets/music.mp3" type="audio/mpeg" />
     </audio>
 
+    <!-- Firebase SDK (compat builds for vanilla JS) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="./js/firebase-config.js"></script>
     <script src="./js/app.js" defer></script>
   </body>
 </html>

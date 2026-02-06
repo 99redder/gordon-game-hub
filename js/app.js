@@ -157,65 +157,93 @@ function registerSW() {
   });
 }
 
-function loadMessages() {
-  try {
-    const raw = localStorage.getItem('ggh_messages');
-    const arr = raw ? JSON.parse(raw) : [];
-    return Array.isArray(arr) ? arr : [];
-  } catch {
-    return [];
-  }
+/* ---- Firebase message cycling display ---- */
+
+const messageState = {
+  messages: [],
+  currentIndex: 0,
+  cycleTimer: null,
+  DISPLAY_TIME: 5000,
+  isAnimating: false,
+};
+
+function setupFirebaseMessages() {
+  const ref = db.ref('messages').orderByChild('ts').limitToLast(50);
+
+  ref.on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (!data) {
+      messageState.messages = [];
+    } else {
+      messageState.messages = Object.values(data).sort((a, b) => a.ts - b.ts);
+    }
+    messageState.currentIndex = Math.max(0, messageState.messages.length - 1);
+    showCurrentMessage();
+    restartCycleTimer();
+  });
 }
 
-function formatTime(ts) {
-  try {
-    const d = new Date(ts);
-    return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-  } catch {
-    return '';
-  }
-}
+function showCurrentMessage() {
+  const card = $('#messageCard');
+  const textEl = $('#messageText');
+  const fromEl = $('#messageFrom');
+  if (!card || !textEl || !fromEl) return;
 
-function renderMessages() {
-  const list = $('#messageList');
-  if (!list) return;
+  card.classList.remove('msg-enter', 'msg-exit', 'msg-empty');
 
-  const msgs = loadMessages().slice(-8).reverse();
-  if (msgs.length === 0) {
-    list.innerHTML = '<div class="messageItem"><div class="messageText">No messages yet.</div><div class="messageMeta">Add one at /messages.html</div></div>';
+  if (messageState.messages.length === 0) {
+    textEl.textContent = 'No messages yet!';
+    fromEl.textContent = 'Send one from the Messages app';
+    card.classList.add('msg-empty');
     return;
   }
 
-  list.innerHTML = msgs.map((m) => {
-    const text = (m?.text || '').toString().slice(0, 200);
-    const meta = m?.ts ? formatTime(m.ts) : '';
-    return `
-      <div class="messageItem" role="listitem">
-        <div class="messageText">${escapeHtml(text)}</div>
-        <div class="messageMeta">${escapeHtml(meta)}</div>
-      </div>
-    `;
-  }).join('');
+  const msg = messageState.messages[messageState.currentIndex];
+  textEl.textContent = msg.text || '';
+  fromEl.textContent = msg.from ? `-- ${msg.from}` : '';
+
+  void card.offsetWidth;
+  card.classList.add('msg-enter');
+  messageState.isAnimating = false;
 }
 
-function escapeHtml(s) {
-  return String(s)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
+function cycleToNextMessage() {
+  if (messageState.messages.length <= 1) return;
+  if (messageState.isAnimating) return;
+
+  messageState.isAnimating = true;
+  const card = $('#messageCard');
+  if (!card) return;
+
+  card.classList.remove('msg-enter');
+  void card.offsetWidth;
+  card.classList.add('msg-exit');
+
+  card.addEventListener('animationend', function onExitDone() {
+    card.removeEventListener('animationend', onExitDone);
+    card.classList.remove('msg-exit');
+
+    messageState.currentIndex =
+      (messageState.currentIndex + 1) % messageState.messages.length;
+
+    showCurrentMessage();
+  }, { once: true });
+}
+
+function restartCycleTimer() {
+  if (messageState.cycleTimer) {
+    clearInterval(messageState.cycleTimer);
+  }
+  if (messageState.messages.length > 1) {
+    messageState.cycleTimer = setInterval(cycleToNextMessage, messageState.DISPLAY_TIME);
+  }
 }
 
 function init() {
   setupGordon();
   setupMusic();
   setupGameTransitions();
-  renderMessages();
-  // refresh messages if another tab updates them
-  window.addEventListener('storage', (e) => {
-    if (e.key === 'ggh_messages') renderMessages();
-  });
+  setupFirebaseMessages();
   registerSW();
 }
 

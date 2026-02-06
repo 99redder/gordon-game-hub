@@ -1,18 +1,30 @@
 const $ = (sel) => document.querySelector(sel);
 
-function loadMessages() {
-  try {
-    const raw = localStorage.getItem('ggh_messages');
-    const arr = raw ? JSON.parse(raw) : [];
-    return Array.isArray(arr) ? arr : [];
-  } catch {
-    return [];
-  }
+/* ---------- "From" name persistence (localStorage) ---------- */
+
+function getSavedName() {
+  return localStorage.getItem('ggh_fromName') || '';
 }
 
-function saveMessages(arr) {
-  localStorage.setItem('ggh_messages', JSON.stringify(arr));
+function saveName(name) {
+  localStorage.setItem('ggh_fromName', name);
 }
+
+/* ---------- Firebase operations ---------- */
+
+function pushMessage(text, from) {
+  return db.ref('messages').push({
+    text: text,
+    from: from,
+    ts: Date.now()
+  });
+}
+
+function clearAllMessages() {
+  return db.ref('messages').remove();
+}
+
+/* ---------- UI ---------- */
 
 function setStatus(text) {
   const el = $('#status');
@@ -30,8 +42,12 @@ function init() {
   registerSW();
 
   const msg = $('#msg');
+  const fromInput = $('#fromName');
   const saveBtn = $('#saveBtn');
   const clearBtn = $('#clearBtn');
+
+  // Restore saved name
+  fromInput.value = getSavedName();
 
   saveBtn.addEventListener('click', () => {
     const text = (msg.value || '').trim();
@@ -39,26 +55,37 @@ function init() {
       setStatus('Type a message first.');
       return;
     }
+    if (text.length > 200) {
+      setStatus('Message too long (max 200 characters).');
+      return;
+    }
 
-    const messages = loadMessages();
-    messages.push({ text, ts: Date.now() });
+    const from = (fromInput.value || '').trim().slice(0, 30);
+    saveName(from);
 
-    // Keep last 50
-    const trimmed = messages.slice(-50);
-    saveMessages(trimmed);
-
-    msg.value = '';
-    setStatus('Saved!');
-
-    // Let it show on the main page if open in another tab
-    window.setTimeout(() => setStatus(''), 1500);
+    pushMessage(text, from)
+      .then(() => {
+        msg.value = '';
+        setStatus('Sent!');
+        window.setTimeout(() => setStatus(''), 2000);
+      })
+      .catch((err) => {
+        console.error('Firebase push error:', err);
+        setStatus('Could not send. Check your connection.');
+      });
   });
 
   clearBtn.addEventListener('click', () => {
-    if (!confirm('Clear all messages for Gordon?')) return;
-    saveMessages([]);
-    setStatus('Cleared.');
-    window.setTimeout(() => setStatus(''), 1500);
+    if (!confirm('Clear ALL messages for Gordon?')) return;
+    clearAllMessages()
+      .then(() => {
+        setStatus('All messages cleared.');
+        window.setTimeout(() => setStatus(''), 2000);
+      })
+      .catch((err) => {
+        console.error('Firebase clear error:', err);
+        setStatus('Could not clear. Check your connection.');
+      });
   });
 }
 

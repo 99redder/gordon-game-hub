@@ -1,13 +1,16 @@
-/* Letter Pop (learning letters) */
+/* Letter Pop (learning letters) — toddler mode (2–3)
+   - Fewer letters (A–F)
+   - Fewer choices (6 big buttons)
+   - Simple score only
+*/
 
 const $ = (sel) => document.querySelector(sel);
 
-const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const LETTERS = ['A','B','C','D','E','F'];
 
 const state = {
   target: 'A',
   score: 0,
-  streak: 0,
   musicEnabled: true,
 };
 
@@ -21,18 +24,47 @@ function pickTarget() {
 }
 
 function chooseTiles() {
-  // 12 tiles: 1 is target, rest are random distinct letters (avoid duplicates where possible)
+  // 6 tiles total (target + 5 others)
   const set = new Set([state.target]);
-  while (set.size < 12) {
+  while (set.size < 6) {
     set.add(LETTERS[randInt(LETTERS.length)]);
   }
   const arr = Array.from(set);
-  // shuffle
   for (let i = arr.length - 1; i > 0; i--) {
     const j = randInt(i + 1);
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
+}
+
+function updateHUD() {
+  $('#score').textContent = String(state.score);
+}
+
+function flash(btn, kind) {
+  btn.classList.remove('good', 'bad');
+  void btn.offsetWidth;
+  btn.classList.add(kind);
+  window.setTimeout(() => btn.classList.remove(kind), 240);
+}
+
+function celebrateNext() {
+  // quick next round, short delay so the child sees the "good" highlight
+  window.setTimeout(() => {
+    pickTarget();
+    renderTiles();
+  }, 260);
+}
+
+function handleGuess(btn, guess) {
+  if (guess === state.target) {
+    state.score += 1;
+    flash(btn, 'good');
+    updateHUD();
+    celebrateNext();
+  } else {
+    flash(btn, 'bad');
+  }
 }
 
 function renderTiles() {
@@ -49,32 +81,6 @@ function renderTiles() {
     btn.addEventListener('click', () => handleGuess(btn, ch));
     area.appendChild(btn);
   }
-}
-
-function updateHUD() {
-  $('#score').textContent = String(state.score);
-  $('#streak').textContent = String(state.streak);
-}
-
-function flash(btn, kind) {
-  btn.classList.remove('good', 'bad');
-  void btn.offsetWidth;
-  btn.classList.add(kind);
-  window.setTimeout(() => btn.classList.remove(kind), 260);
-}
-
-function handleGuess(btn, guess) {
-  if (guess === state.target) {
-    state.score += 1;
-    state.streak += 1;
-    flash(btn, 'good');
-    pickTarget();
-    renderTiles();
-  } else {
-    state.streak = 0;
-    flash(btn, 'bad');
-  }
-  updateHUD();
 }
 
 function setupMusic() {
@@ -112,12 +118,9 @@ function setupMusic() {
     render();
   }
 
-  // Autostart after first gesture if enabled
-  const tryAutostart = () => {
-    if (!state.musicEnabled) return;
-    start();
-  };
-  window.addEventListener('pointerdown', tryAutostart, { once: true });
+  window.addEventListener('pointerdown', () => {
+    if (state.musicEnabled) start();
+  }, { once: true });
 
   toggle.addEventListener('click', () => {
     if (state.musicEnabled) stop();
@@ -132,15 +135,6 @@ function init() {
   pickTarget();
   renderTiles();
   updateHUD();
-
-  window.addEventListener('keydown', (e) => {
-    const key = (e.key || '').toUpperCase();
-    if (!LETTERS.includes(key)) return;
-
-    const btn = Array.from(document.querySelectorAll('.tile'))
-      .find((b) => b.textContent === key);
-    if (btn) handleGuess(btn, key);
-  });
 }
 
 init();

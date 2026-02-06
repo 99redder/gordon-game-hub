@@ -7,22 +7,30 @@
     <title>Count & Tap • Gordon Game Hub</title>
     <link rel="stylesheet" href="../../css/styles.css" />
     <style>
+      /* Younger kids (2–3): count 1–5, huge stars, auto-check */
       body{ overflow:auto; }
-      .gameShell{ max-width: 980px; margin:0 auto; padding: 18px; }
-      .topRow{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-      .title{ font-family:"Fredoka", ui-rounded, system-ui; font-weight: 900; font-size: 34px; color:#06233b; margin:0; }
-      .sub{ margin: 6px 0 0 0; font-weight: 900; opacity:0.8; }
-      .card{ background: rgba(255,255,255,0.86); border:1px solid rgba(255,255,255,0.55); border-radius: 22px; padding: 16px; box-shadow: 0 18px 46px rgba(0,0,0,0.16); backdrop-filter: blur(8px); }
-      .hud{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; font-weight: 900; }
-      .prompt{ font-size: 22px; font-weight: 900; }
-      .target{ font-size: 52px; font-weight: 900; }
-      .row{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-      .dots{ display:grid; grid-template-columns: repeat(8, minmax(0,1fr)); gap: 10px; margin-top: 12px; }
-      .dot{ height: 48px; border-radius: 18px; border: none; cursor:pointer; font-size: 28px; background: rgba(255,255,255,0.85); box-shadow: 0 10px 26px rgba(0,0,0,0.14); }
-      .dot.on{ background: rgba(34,211,238,0.55); }
-      .good{ outline: 5px solid rgba(16,185,129,0.55); }
-      .bad{ outline: 5px solid rgba(239,68,68,0.45); }
-      .small{ font-size: 12px; opacity:0.7; font-weight:900; margin: 10px 0 0 0; }
+      .gameShell{ min-height: 100vh; padding: 16px; display:flex; flex-direction:column; gap: 12px; }
+      .topRow{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+      .title{ font-family:"Fredoka", ui-rounded, system-ui; font-weight: 900; font-size: clamp(28px, 4.5vw, 44px); color:#06233b; margin:0; }
+      .hud{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-weight: 900; }
+      .card{ flex:1; background: rgba(255,255,255,0.86); border:2px solid rgba(255,255,255,0.65); border-radius: 26px; padding: 16px;
+        box-shadow: 0 18px 46px rgba(0,0,0,0.16); backdrop-filter: blur(8px);
+        display:flex; flex-direction:column; justify-content:center; gap: 14px;
+      }
+      .prompt{ text-align:center; font-weight: 900; font-size: clamp(18px, 3vw, 26px); opacity:0.85; }
+      .target{ text-align:center; font-size: clamp(88px, 14vw, 140px); font-weight: 900; }
+      .dots{ display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; max-width: 720px; margin: 0 auto; width:100%; }
+      @media (min-width: 720px){ .dots{ grid-template-columns: repeat(5, minmax(0,1fr)); } }
+      .dot{ height: clamp(86px, 12vw, 120px); border-radius: 28px; border: none; cursor:pointer;
+        font-size: clamp(54px, 7vw, 84px);
+        background: rgba(255,255,255,0.92);
+        box-shadow: 0 14px 30px rgba(0,0,0,0.16);
+      }
+      .dot.on{ background: rgba(34,211,238,0.40); }
+      .good{ outline: 7px solid rgba(16,185,129,0.50); }
+      .bad{ outline: 7px solid rgba(239,68,68,0.38); }
+      .status{ text-align:center; font-weight: 900; font-size: 20px; min-height: 28px; }
+      .scoreRow{ display:flex; align-items:center; justify-content:center; gap:14px; font-weight: 900; font-size: 18px; opacity:0.85; }
     </style>
   </head>
   <body>
@@ -30,37 +38,24 @@
 
     <div class="gameShell">
       <div class="topRow">
-        <div>
-          <h1 class="title">Count & Tap</h1>
-          <p class="sub">Tap the same number of stars as Gordon shows.</p>
-        </div>
+        <h1 class="title">Count & Tap</h1>
         <div class="hud">
-          <a class="btn secondary" href="../../index.html">← Back to Hub</a>
+          <a class="btn secondary" href="../../index.html">← Hub</a>
           <button class="btn secondary" id="musicToggle" type="button">Music: On</button>
         </div>
       </div>
 
-      <div class="card" style="margin-top:12px;">
-        <div class="row">
-          <div>
-            <div class="prompt">Target number:</div>
-            <div class="target" id="target">3</div>
-          </div>
-          <div style="text-align:right; font-weight:900;">
-            <div><span style="opacity:.7;">Tapped:</span> <span id="tapped">0</span></div>
-            <div><span style="opacity:.7;">Score:</span> <span id="score">0</span></div>
-          </div>
-        </div>
+      <div class="card" aria-label="Count & Tap game">
+        <div class="prompt">Tap this many stars</div>
+        <div class="target" id="target">3</div>
 
         <div class="dots" id="dots" aria-label="Tap stars"></div>
 
-        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
-          <button class="btn" id="checkBtn" type="button">Check</button>
-          <button class="btn secondary" id="resetBtn" type="button">Reset</button>
-          <span id="status" style="font-weight:900;"></span>
-        </div>
+        <div class="status" id="status"></div>
 
-        <p class="small">Great for counting 1–10.</p>
+        <div class="scoreRow" aria-label="Score">
+          <span>Score:</span> <span id="score">0</span>
+        </div>
       </div>
     </div>
 

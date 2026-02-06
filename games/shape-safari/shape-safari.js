@@ -1,4 +1,7 @@
-/* Shape Safari (learning basic shapes) */
+/* Shape Safari (learning basic shapes) — toddler mode (2–3)
+   - Only 3 shapes (circle/square/triangle)
+   - 3 giant buttons
+*/
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -6,36 +9,21 @@ const SHAPES = [
   {
     key: 'circle',
     name: 'Circle',
-    svg: (color) => `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="34" fill="${color}" opacity="0.92" /><circle cx="50" cy="50" r="34" fill="none" stroke="#0f172a" stroke-width="6" opacity="0.12" /></svg>`
+    svg: (color) => `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="34" fill="${color}" opacity="0.92" /><circle cx="50" cy="50" r="34" fill="none" stroke="#0f172a" stroke-width="6" opacity="0.10" /></svg>`
   },
   {
     key: 'square',
     name: 'Square',
-    svg: (color) => `<svg viewBox="0 0 100 100" aria-hidden="true"><rect x="20" y="20" width="60" height="60" rx="10" fill="${color}" opacity="0.92" /><rect x="20" y="20" width="60" height="60" rx="10" fill="none" stroke="#0f172a" stroke-width="6" opacity="0.12" /></svg>`
+    svg: (color) => `<svg viewBox="0 0 100 100" aria-hidden="true"><rect x="20" y="20" width="60" height="60" rx="10" fill="${color}" opacity="0.92" /><rect x="20" y="20" width="60" height="60" rx="10" fill="none" stroke="#0f172a" stroke-width="6" opacity="0.10" /></svg>`
   },
   {
     key: 'triangle',
     name: 'Triangle',
-    svg: (color) => `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 18 L84 80 H16 Z" fill="${color}" opacity="0.92" /><path d="M50 18 L84 80 H16 Z" fill="none" stroke="#0f172a" stroke-width="6" opacity="0.12" /></svg>`
-  },
-  {
-    key: 'star',
-    name: 'Star',
-    svg: (color) => `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 14 L60 38 L86 38 L65 54 L73 78 L50 63 L27 78 L35 54 L14 38 L40 38 Z" fill="${color}" opacity="0.92" /><path d="M50 14 L60 38 L86 38 L65 54 L73 78 L50 63 L27 78 L35 54 L14 38 L40 38 Z" fill="none" stroke="#0f172a" stroke-width="6" opacity="0.12" /></svg>`
-  },
-  {
-    key: 'heart',
-    name: 'Heart',
-    svg: (color) => `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 82 C18 58 14 42 22 32 C30 22 44 24 50 34 C56 24 70 22 78 32 C86 42 82 58 50 82 Z" fill="${color}" opacity="0.92" /><path d="M50 82 C18 58 14 42 22 32 C30 22 44 24 50 34 C56 24 70 22 78 32 C86 42 82 58 50 82 Z" fill="none" stroke="#0f172a" stroke-width="6" opacity="0.12" /></svg>`
-  },
-  {
-    key: 'diamond',
-    name: 'Diamond',
-    svg: (color) => `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 14 L82 50 L50 86 L18 50 Z" fill="${color}" opacity="0.92" /><path d="M50 14 L82 50 L50 86 L18 50 Z" fill="none" stroke="#0f172a" stroke-width="6" opacity="0.12" /></svg>`
+    svg: (color) => `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 18 L84 80 H16 Z" fill="${color}" opacity="0.92" /><path d="M50 18 L84 80 H16 Z" fill="none" stroke="#0f172a" stroke-width="6" opacity="0.10" /></svg>`
   }
 ];
 
-const COLORS = ['#60a5fa', '#34d399', '#fbbf24', '#fb7185', '#a78bfa', '#22d3ee'];
+const COLORS = ['#60a5fa', '#34d399', '#fbbf24'];
 
 const state = {
   target: SHAPES[0],
@@ -65,9 +53,7 @@ function renderGrid() {
   const grid = $('#grid');
   grid.innerHTML = '';
 
-  // show 6 tiles, include target plus 5 others
-  const others = shuffle(SHAPES.filter((s) => s.key !== state.target.key)).slice(0, 5);
-  const tiles = shuffle([state.target, ...others]);
+  const tiles = shuffle(SHAPES);
 
   tiles.forEach((shape, idx) => {
     const btn = document.createElement('button');
@@ -85,7 +71,7 @@ function flash(btn, kind) {
   btn.classList.remove('good', 'bad');
   void btn.offsetWidth;
   btn.classList.add(kind);
-  window.setTimeout(() => btn.classList.remove(kind), 260);
+  window.setTimeout(() => btn.classList.remove(kind), 240);
 }
 
 function handlePick(btn, shape) {
@@ -93,8 +79,10 @@ function handlePick(btn, shape) {
     state.score += 1;
     $('#score').textContent = String(state.score);
     flash(btn, 'good');
-    pickTarget();
-    renderGrid();
+    window.setTimeout(() => {
+      pickTarget();
+      renderGrid();
+    }, 260);
   } else {
     flash(btn, 'bad');
   }

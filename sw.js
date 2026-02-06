@@ -1,5 +1,5 @@
 /* Gordon Game Hub service worker (basic offline cache) */
-const CACHE_NAME = 'gordon-game-hub-v9';
+const CACHE_NAME = 'gordon-game-hub-v10';
 const ASSETS = [
   './',
   './index.html',
@@ -24,7 +24,10 @@ const ASSETS = [
   './games/shape-safari/shape-safari.js',
   './games/number-count/',
   './games/number-count/index.html',
-  './games/number-count/number-count.js'
+  './games/number-count/number-count.js',
+  './games/coloring/',
+  './games/coloring/index.html',
+  './games/coloring/coloring.js'
 ];
 
 self.addEventListener('install', (event) => {

@@ -9,7 +9,7 @@
     <style>
       /* Younger kids (2–3): 3 shapes, giant buttons, full-screen */
       body{ overflow:auto; }
-      .gameShell{ min-height: 100vh; padding: 16px; display:flex; flex-direction:column; gap: 12px; }
+      .gameShell{ position: relative; min-height: 100vh; padding: 16px; display:flex; flex-direction:column; gap: 12px; }
       .topRow{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
       .title{ font-family:"Fredoka", ui-rounded, system-ui; font-weight: 900; font-size: clamp(28px, 4.5vw, 44px); color:#06233b; margin:0; }
       .hud{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-weight: 900; }
@@ -31,13 +31,14 @@
       .bad{ outline: 7px solid rgba(239,68,68,0.38); }
       .scoreRow{ display:flex; align-items:center; justify-content:center; gap:14px; font-weight: 900; font-size: 18px; opacity:0.85; }
 
-      /* Confetti celebration (very lightweight) */
+      /* Confetti celebration (very lightweight)
+         Put it ABOVE the UI cards so it's obvious to toddlers. */
       .confetti{
         position: fixed;
         inset: 0;
         pointer-events: none;
         opacity: 0;
-        z-index: 0; /* behind the UI; above sky */
+        z-index: 20;
       }
       .confetti.show{ opacity: 1; animation: confettiFade 650ms ease-out forwards; }
       @keyframes confettiFade{

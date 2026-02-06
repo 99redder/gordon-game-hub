@@ -81,7 +81,7 @@ body{
   font-family: "Fredoka", ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   font-weight: 800;
   font-size: clamp(48px, 8vw, 96px);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.01em;
   color: #06233b;
   -webkit-text-stroke: 2px rgba(255,255,255,0.55);
   paint-order: stroke fill;
@@ -91,8 +91,8 @@ body{
   display:flex;
   flex-wrap:wrap;
   width:100%;
-  justify-content:space-between;
-  gap:4px;
+  justify-content:flex-start;
+  gap:1px;
 }
 
 .logoLetter{

@@ -1,5 +1,5 @@
 /* Gordon Game Hub service worker (basic offline cache) */
-const CACHE_NAME = 'gordon-game-hub-v5';
+const CACHE_NAME = 'gordon-game-hub-v6';
 const ASSETS = [
   './',
   './index.html',

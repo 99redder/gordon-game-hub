@@ -56,10 +56,19 @@ function celebrateNext() {
   }, 260);
 }
 
+function celebrate() {
+  const confetti = $('#confetti');
+  if (!confetti) return;
+  confetti.classList.remove('show');
+  void confetti.offsetWidth;
+  confetti.classList.add('show');
+}
+
 function handleGuess(btn, guess) {
   if (guess === state.target) {
     state.score += 1;
     flash(btn, 'good');
+    celebrate();
     updateHUD();
     celebrateNext();
   } else {

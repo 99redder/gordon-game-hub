@@ -42,6 +42,14 @@ function flashCard(kind) {
   window.setTimeout(() => card.classList.remove(kind), 260);
 }
 
+function celebrate() {
+  const confetti = $('#confetti');
+  if (!confetti) return;
+  confetti.classList.remove('show');
+  void confetti.offsetWidth;
+  confetti.classList.add('show');
+}
+
 function renderDots() {
   const wrap = $('#dots');
   wrap.innerHTML = '';
@@ -73,6 +81,7 @@ function renderDots() {
         updateScore();
         setStatus('Yay! ⭐', true);
         flashCard('good');
+        celebrate();
 
         window.setTimeout(() => {
           state.lock = false;

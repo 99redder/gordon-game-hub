@@ -7,23 +7,29 @@
     <title>Shape Safari • Gordon Game Hub</title>
     <link rel="stylesheet" href="../../css/styles.css" />
     <style>
+      /* Younger kids (2–3): 3 shapes, giant buttons, full-screen */
       body{ overflow:auto; }
-      .gameShell{ max-width: 980px; margin:0 auto; padding: 18px; }
-      .topRow{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-      .title{ font-family:"Fredoka", ui-rounded, system-ui; font-weight: 900; font-size: 34px; color:#06233b; margin:0; }
-      .sub{ margin: 6px 0 0 0; font-weight: 900; opacity:0.8; }
-      .card{ background: rgba(255,255,255,0.86); border:1px solid rgba(255,255,255,0.55); border-radius: 22px; padding: 16px; box-shadow: 0 18px 46px rgba(0,0,0,0.16); backdrop-filter: blur(8px); }
-      .hud{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; font-weight: 900; }
-      .prompt{ font-size: 22px; font-weight: 900; }
-      .shapeName{ font-size: 44px; font-weight: 900; }
-      .grid{ display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin-top: 12px; }
+      .gameShell{ min-height: 100vh; padding: 16px; display:flex; flex-direction:column; gap: 12px; }
+      .topRow{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+      .title{ font-family:"Fredoka", ui-rounded, system-ui; font-weight: 900; font-size: clamp(28px, 4.5vw, 44px); color:#06233b; margin:0; }
+      .hud{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-weight: 900; }
+      .card{ flex:1; background: rgba(255,255,255,0.86); border:2px solid rgba(255,255,255,0.65); border-radius: 26px; padding: 16px;
+        box-shadow: 0 18px 46px rgba(0,0,0,0.16); backdrop-filter: blur(8px);
+        display:flex; flex-direction:column; justify-content:center; gap: 14px;
+      }
+      .prompt{ text-align:center; font-weight: 900; font-size: clamp(18px, 3vw, 26px); opacity:0.85; }
+      .shapeName{ font-size: clamp(40px, 6vw, 72px); font-weight: 900; }
+      .grid{ display:grid; grid-template-columns: repeat(1, minmax(0,1fr)); gap: 14px; max-width: 720px; margin: 0 auto; width:100%; }
       @media (min-width: 720px){ .grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
-      .tile{ border:none; border-radius: 20px; padding: 18px; background: rgba(255,255,255,0.85); box-shadow: 0 10px 26px rgba(0,0,0,0.14); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+      .tile{ border:none; border-radius: 26px; padding: 18px; background: rgba(255,255,255,0.9);
+        box-shadow: 0 14px 30px rgba(0,0,0,0.16); cursor:pointer;
+        display:flex; align-items:center; justify-content:center;
+      }
       .tile:active{ transform: translateY(1px) scale(0.99); }
-      svg{ width: 92px; height: 92px; }
-      .good{ outline: 5px solid rgba(16,185,129,0.55); }
-      .bad{ outline: 5px solid rgba(239,68,68,0.45); }
-      .small{ font-size: 12px; opacity:0.7; font-weight:900; margin: 10px 0 0 0; }
+      svg{ width: min(220px, 60vw); height: auto; }
+      .good{ outline: 7px solid rgba(16,185,129,0.50); }
+      .bad{ outline: 7px solid rgba(239,68,68,0.38); }
+      .scoreRow{ display:flex; align-items:center; justify-content:center; gap:14px; font-weight: 900; font-size: 18px; opacity:0.85; }
     </style>
   </head>
   <body>
@@ -31,23 +37,19 @@
 
     <div class="gameShell">
       <div class="topRow">
-        <div>
-          <h1 class="title">Shape Safari</h1>
-          <p class="sub">Find the shape Gordon asks for.</p>
-        </div>
+        <h1 class="title">Shape Safari</h1>
         <div class="hud">
-          <a class="btn secondary" href="../../index.html">← Back to Hub</a>
+          <a class="btn secondary" href="../../index.html">← Hub</a>
           <button class="btn secondary" id="musicToggle" type="button">Music: On</button>
         </div>
       </div>
 
-      <div class="card" style="margin-top:12px;">
+      <div class="card" aria-label="Shape Safari game">
         <div class="prompt">Tap the <span class="shapeName" id="targetName">Circle</span></div>
         <div class="grid" id="grid" aria-label="Shape buttons"></div>
-        <div style="margin-top:10px; font-weight:900;">
-          <span style="opacity:.7;">Score:</span> <span id="score">0</span>
+        <div class="scoreRow" aria-label="Score">
+          <span>Score:</span> <span id="score">0</span>
         </div>
-        <p class="small">Shapes: circle, square, triangle, star, heart, diamond.</p>
       </div>
     </div>
 

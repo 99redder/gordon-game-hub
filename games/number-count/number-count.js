@@ -1,4 +1,8 @@
-/* Count & Tap (learning numbers / counting) */
+/* Count & Tap (learning numbers / counting) — toddler mode (2–3)
+   - Target 1–5
+   - 10 huge stars
+   - Auto-check: when tapped count == target, celebrate and advance
+*/
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -7,6 +11,7 @@ const state = {
   tapped: new Set(),
   score: 0,
   musicEnabled: true,
+  lock: false,
 };
 
 function randInt(max) {
@@ -14,47 +19,18 @@ function randInt(max) {
 }
 
 function setTarget() {
-  state.target = 1 + randInt(10);
+  state.target = 1 + randInt(5);
   $('#target').textContent = String(state.target);
 }
 
 function setStatus(text, good) {
   const el = $('#status');
-  el.textContent = text;
+  el.textContent = text || '';
   el.style.color = good === true ? '#065f46' : good === false ? '#7f1d1d' : '';
 }
 
-function updateCounts() {
-  $('#tapped').textContent = String(state.tapped.size);
+function updateScore() {
   $('#score').textContent = String(state.score);
-}
-
-function renderDots() {
-  const wrap = $('#dots');
-  wrap.innerHTML = '';
-  state.tapped.clear();
-  for (let i = 0; i < 16; i++) {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'dot';
-    btn.textContent = '⭐';
-    btn.setAttribute('aria-label', 'Star');
-
-    btn.addEventListener('click', () => {
-      if (state.tapped.has(i)) {
-        state.tapped.delete(i);
-        btn.classList.remove('on');
-      } else {
-        state.tapped.add(i);
-        btn.classList.add('on');
-      }
-      setStatus('');
-      updateCounts();
-    });
-
-    wrap.appendChild(btn);
-  }
-  updateCounts();
 }
 
 function flashCard(kind) {
@@ -64,6 +40,53 @@ function flashCard(kind) {
   void card.offsetWidth;
   card.classList.add(kind);
   window.setTimeout(() => card.classList.remove(kind), 260);
+}
+
+function renderDots() {
+  const wrap = $('#dots');
+  wrap.innerHTML = '';
+  state.tapped.clear();
+
+  // 10 stars is plenty for counting 1–5 and keeps the screen simple.
+  for (let i = 0; i < 10; i++) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'dot';
+    btn.textContent = '⭐';
+    btn.setAttribute('aria-label', 'Star');
+
+    btn.addEventListener('click', () => {
+      if (state.lock) return;
+
+      if (state.tapped.has(i)) {
+        state.tapped.delete(i);
+        btn.classList.remove('on');
+      } else {
+        state.tapped.add(i);
+        btn.classList.add('on');
+      }
+
+      // Auto-check
+      if (state.tapped.size === state.target) {
+        state.lock = true;
+        state.score += 1;
+        updateScore();
+        setStatus('Yay! ⭐', true);
+        flashCard('good');
+
+        window.setTimeout(() => {
+          state.lock = false;
+          setStatus('');
+          setTarget();
+          renderDots();
+        }, 650);
+      } else {
+        setStatus('');
+      }
+    });
+
+    wrap.appendChild(btn);
+  }
 }
 
 function setupMusic() {
@@ -118,27 +141,7 @@ function init() {
   setTarget();
   renderDots();
   setStatus('');
-
-  $('#checkBtn').addEventListener('click', () => {
-    if (state.tapped.size === state.target) {
-      state.score += 1;
-      setStatus('Nice counting! ✅', true);
-      flashCard('good');
-      setTarget();
-      renderDots();
-    } else {
-      setStatus(`Try again! (Need ${state.target})`, false);
-      flashCard('bad');
-    }
-    updateCounts();
-  });
-
-  $('#resetBtn').addEventListener('click', () => {
-    renderDots();
-    setStatus('');
-  });
-
-  updateCounts();
+  updateScore();
 }
 
 init();

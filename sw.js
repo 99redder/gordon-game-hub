@@ -1,5 +1,5 @@
 /* Gordon Game Hub service worker (basic offline cache) */
-const CACHE_NAME = 'gordon-game-hub-v2';
+const CACHE_NAME = 'gordon-game-hub-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -10,9 +10,21 @@ const ASSETS = [
   './js/app.js',
   './js/messages.js',
   './js/firebase-config.js',
+  './js/app-check.js',
   './icons/icon.svg',
   './assets/music.mp3',
-  './assets/MUSIC_LICENSE.txt'
+  './assets/MUSIC_LICENSE.txt',
+
+  // Games
+  './games/letter-pop/',
+  './games/letter-pop/index.html',
+  './games/letter-pop/letter-pop.js',
+  './games/shape-safari/',
+  './games/shape-safari/index.html',
+  './games/shape-safari/shape-safari.js',
+  './games/number-count/',
+  './games/number-count/index.html',
+  './games/number-count/number-count.js'
 ];
 
 self.addEventListener('install', (event) => {

@@ -110,8 +110,28 @@ function setupMusic() {
     renderMusicButton();
   }
 
+  function icon(on) {
+    // speaker icon (simple + kid-friendly)
+    if (on) {
+      return `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M3 10v4c0 .55.45 1 1 1h3l5 4V5L7 9H4c-.55 0-1 .45-1 1z" fill="currentColor" opacity="0.95"/>
+          <path d="M16.5 8.5a1 1 0 0 1 1.4 0 6 6 0 0 1 0 7 1 1 0 1 1-1.4-1.4 4 4 0 0 0 0-4.2 1 1 0 0 1 0-1.4z" fill="currentColor" opacity="0.9"/>
+          <path d="M18.9 6.1a1 1 0 0 1 1.4 0 9.5 9.5 0 0 1 0 11.8 1 1 0 1 1-1.4-1.4 7.5 7.5 0 0 0 0-9 1 1 0 0 1 0-1.4z" fill="currentColor" opacity="0.75"/>
+        </svg>`;
+    }
+    return `
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M3 10v4c0 .55.45 1 1 1h3l5 4V5L7 9H4c-.55 0-1 .45-1 1z" fill="currentColor" opacity="0.95"/>
+        <path d="M16 9l5 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M21 9l-5 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+      </svg>`;
+  }
+
   function renderMusicButton() {
-    toggle.textContent = state.musicEnabled ? 'Music: On' : 'Music: Off';
+    toggle.innerHTML = icon(state.musicEnabled);
+    toggle.setAttribute('aria-label', state.musicEnabled ? 'Music on' : 'Music off');
+    toggle.setAttribute('title', state.musicEnabled ? 'Music on' : 'Music off');
   }
 
   toggle.addEventListener('click', () => {

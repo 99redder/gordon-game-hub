@@ -5,7 +5,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyDomlEcRZNQtJlm6On_pN1zAkJ3Wr9QtR0",
   authDomain: "gordon-game-hub.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+  databaseURL: "https://gordon-game-hub-default-rtdb.firebaseio.com",
   projectId: "gordon-game-hub",
   storageBucket: "gordon-game-hub.firebasestorage.app",
   messagingSenderId: "525086027738",

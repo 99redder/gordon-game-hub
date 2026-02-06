@@ -56,12 +56,48 @@ function celebrateNext() {
   }, 260);
 }
 
+function playGoodJobSound() {
+  // No external asset needed: tiny happy chime using WebAudio.
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;
+    const ctx = new Ctx();
+
+    const now = ctx.currentTime;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.18, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.55);
+    gain.connect(ctx.destination);
+
+    const o1 = ctx.createOscillator();
+    o1.type = 'sine';
+    o1.frequency.setValueAtTime(659.25, now); // E5
+    o1.connect(gain);
+
+    const o2 = ctx.createOscillator();
+    o2.type = 'sine';
+    o2.frequency.setValueAtTime(783.99, now + 0.12); // G5
+    o2.connect(gain);
+
+    o1.start(now);
+    o1.stop(now + 0.22);
+    o2.start(now + 0.12);
+    o2.stop(now + 0.55);
+
+    // close a bit later to free resources
+    window.setTimeout(() => ctx.close?.().catch(() => {}), 700);
+  } catch {}
+}
+
 function celebrate() {
   const confetti = $('#confetti');
-  if (!confetti) return;
-  confetti.classList.remove('show');
-  void confetti.offsetWidth;
-  confetti.classList.add('show');
+  if (confetti) {
+    confetti.classList.remove('show');
+    void confetti.offsetWidth;
+    confetti.classList.add('show');
+  }
+  playGoodJobSound();
 }
 
 function handleGuess(btn, guess) {

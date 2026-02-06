@@ -40,10 +40,11 @@
         opacity: 0;
         z-index: 0; /* behind the UI; above sky */
       }
-      .confetti.show{ opacity: 1; animation: confettiFade 650ms ease-out forwards; }
+      .confetti.show{ opacity: 1; animation: confettiFade 1400ms ease-out forwards; }
       @keyframes confettiFade{
         0%{ opacity: 0; }
-        10%{ opacity: 1; }
+        8%{ opacity: 1; }
+        70%{ opacity: 1; }
         100%{ opacity: 0; }
       }
       .confetti::before{
@@ -67,11 +68,11 @@
           radial-gradient(circle at 78% 38%, rgba(34,211,238,0.70) 0 9px, transparent 10px),
           radial-gradient(circle at 90% 44%, rgba(251,113,133,0.70) 0 9px, transparent 10px);
         transform: translateY(-8%);
-        animation: confettiFall 650ms ease-out forwards;
+        animation: confettiFall 1400ms ease-out forwards;
       }
       @keyframes confettiFall{
-        0%{ transform: translateY(-18%); }
-        100%{ transform: translateY(12%); }
+        0%{ transform: translateY(-22%); }
+        100%{ transform: translateY(34%); }
       }
     </style>
   </head>

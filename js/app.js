@@ -78,7 +78,7 @@ function setupMusic() {
 
   async function start() {
     try {
-      audio.volume = 0.35;
+      audio.volume = 0.18;
       audio.loop = true;
       await audio.play();
       state.musicEnabled = true;

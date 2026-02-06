@@ -111,6 +111,36 @@ function setupMusic() {
   });
 }
 
+function setupGameTransitions() {
+  const overlay = $('#transitionOverlay');
+  const text = $('#transitionText');
+
+  document.querySelectorAll('.gameLink').forEach((a) => {
+    a.addEventListener('click', (e) => {
+      // allow normal browser "open in new tab" behaviors
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+
+      const url = a.getAttribute('data-url') || a.getAttribute('href');
+      if (!url || url === '#') {
+        e.preventDefault();
+        return;
+      }
+
+      e.preventDefault();
+
+      // Show app-like transition
+      const label = a.querySelector('.gameName')?.textContent?.trim() || 'Game';
+      text.textContent = `Loading ${label}…`;
+      overlay.classList.add('show');
+
+      // small delay so it feels like an in-app navigation
+      window.setTimeout(() => {
+        window.location.href = url;
+      }, 320);
+    });
+  });
+}
+
 function registerSW() {
   if (!('serviceWorker' in navigator)) return;
   window.addEventListener('load', () => {
@@ -121,6 +151,7 @@ function registerSW() {
 function init() {
   setupGordon();
   setupMusic();
+  setupGameTransitions();
   registerSW();
 }
 

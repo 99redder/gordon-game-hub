@@ -55,14 +55,15 @@ body{
   display:flex;
   align-items:center;
   gap:16px;
+  flex:1;
 }
 
 .brandBadge{
   width:92px;
   height:92px;
   border-radius:22px;
-  background: #0b1220;
-  border:2px solid #ff2bd6;
+  background: linear-gradient(140deg, #7dd3fc, #fbcfe8);
+  border:2px solid #38bdf8;
   display:grid;
   place-items:center;
   box-shadow: 0 14px 30px rgba(0,0,0,0.18);
@@ -72,20 +73,48 @@ body{
   display:flex;
   flex-direction:column;
   line-height:1.05;
+  min-width:0;
+  flex:1;
 }
 
 .logoText{
   font-family: "Fredoka", ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   font-weight: 800;
-  font-size: 46px;
-  letter-spacing: 0.02em;
+  font-size: clamp(48px, 8vw, 96px);
+  letter-spacing: 0.08em;
   color: #06233b;
   -webkit-text-stroke: 2px rgba(255,255,255,0.55);
   paint-order: stroke fill;
   text-shadow:
     0 3px 0 rgba(255,255,255,0.40),
     0 14px 28px rgba(0,0,0,0.18);
+  display:flex;
+  flex-wrap:wrap;
+  width:100%;
+  justify-content:space-between;
+  gap:4px;
 }
+
+.logoLetter{
+  display:inline-block;
+}
+
+.logoSpace{
+  width:0.6ch;
+}
+
+.logoLetter:nth-child(12n + 1){color:#ef4444;}
+.logoLetter:nth-child(12n + 2){color:#f97316;}
+.logoLetter:nth-child(12n + 3){color:#eab308;}
+.logoLetter:nth-child(12n + 4){color:#22c55e;}
+.logoLetter:nth-child(12n + 5){color:#14b8a6;}
+.logoLetter:nth-child(12n + 6){color:#0ea5e9;}
+.logoLetter:nth-child(12n + 7){color:#3b82f6;}
+.logoLetter:nth-child(12n + 8){color:#8b5cf6;}
+.logoLetter:nth-child(12n + 9){color:#ec4899;}
+.logoLetter:nth-child(12n + 10){color:#f43f5e;}
+.logoLetter:nth-child(12n + 11){color:#10b981;}
+.logoLetter:nth-child(12n + 12){color:#f59e0b;}
 
 .logoSub{
   margin-top: 2px;
@@ -179,39 +208,70 @@ body{
   flex-direction:column;
   align-items:center;
   justify-content:flex-end;
-  gap:10px;
+  gap:14px;
   height:100%;
 }
 
-.messageBoard{
+/* ---- Animated message display (above Gordon) ---- */
+.messageDisplay{
   width: 100%;
   max-width: 420px;
-  background: rgba(255,255,255,0.78);
-  border: 1px solid rgba(2,132,199,0.18);
-  border-radius: 18px;
-  padding: 10px 12px;
+  min-height: 80px;
+  position: relative;
+  overflow: hidden;
 }
-.messageBoardHeader{display:flex; align-items:baseline; justify-content:space-between; gap:10px;}
-.messageBoardTitle{font-family:"Fredoka", ui-rounded, system-ui; font-weight:800; font-size:16px; color:#06233b;}
-.messageBoardSub{font-size:12px; opacity:0.75; font-weight:700;}
-.messageBoardSub code{font-family: ui-monospace, Menlo, Monaco, monospace; font-weight:800;}
-.messageList{
-  margin-top: 8px;
-  max-height: 120px;
-  overflow:auto;
-  display:flex;
-  flex-direction:column;
-  gap: 8px;
-  padding-right: 2px;
+.messageDisplayCard{
+  background: rgba(255,255,255,0.92);
+  border: 3px solid rgba(14,165,233,0.35);
+  border-radius: 22px;
+  padding: 16px 20px;
+  text-align: center;
+  box-shadow:
+    0 8px 24px rgba(14,165,233,0.15),
+    0 2px 6px rgba(0,0,0,0.08);
+  opacity: 0;
+  transform: translateY(20px) scale(0.92);
 }
-.messageItem{
-  background: rgba(255,255,255,0.86);
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 14px;
-  padding: 8px 10px;
+.messageDisplayText{
+  font-family: "Fredoka", ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight: 800;
+  font-size: 28px;
+  line-height: 1.25;
+  color: #06233b;
+  word-break: break-word;
 }
-.messageText{font-weight:800; font-size:14px;}
-.messageMeta{margin-top:2px; font-size:11px; font-weight:700; opacity:0.65;}
+.messageDisplayFrom{
+  margin-top: 6px;
+  font-family: "Fredoka", ui-rounded, system-ui;
+  font-weight: 700;
+  font-size: 16px;
+  color: rgba(6,35,59,0.55);
+}
+
+/* entrance: bounce up */
+.messageDisplayCard.msg-enter{
+  animation: msgBounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes msgBounceIn{
+  0%  { opacity:0; transform:translateY(30px) scale(0.85); }
+  60% { opacity:1; transform:translateY(-6px) scale(1.03); }
+  100%{ opacity:1; transform:translateY(0) scale(1); }
+}
+
+/* exit: fade out upward */
+.messageDisplayCard.msg-exit{
+  animation: msgFadeOut 0.35s ease-in forwards;
+}
+@keyframes msgFadeOut{
+  0%  { opacity:1; transform:translateY(0) scale(1); }
+  100%{ opacity:0; transform:translateY(-20px) scale(0.9); }
+}
+
+/* placeholder state */
+.messageDisplayCard.msg-empty{
+  opacity: 0.6;
+  transform: translateY(0) scale(1);
+}
 
 .speech{
   max-width: 320px;
@@ -300,6 +360,8 @@ body{
   .spinner{ animation: none; }
   .gameCard{ transition: none; }
   .transitionOverlay{ transition: none; }
+  .messageDisplayCard.msg-enter{ animation:none; opacity:1; transform:none; }
+  .messageDisplayCard.msg-exit{ animation:none; opacity:0; }
 }
 
 @media (max-width: 860px){

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Gordon Game Hub">
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#8fd7ff"/>
+      <stop offset="1" stop-color="#69c2f3"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#003b5c" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#sky)"/>
+  <g opacity="0.95">
+    <circle cx="170" cy="175" r="62" fill="#fff"/>
+    <circle cx="240" cy="158" r="74" fill="#fff"/>
+    <circle cx="320" cy="180" r="62" fill="#fff"/>
+    <rect x="140" y="180" width="220" height="80" rx="40" fill="#fff"/>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="96" y="280" width="320" height="160" rx="56" fill="#ffffff" opacity="0.88"/>
+  </g>
+  <text x="256" y="400" text-anchor="middle" font-family="system-ui, -apple-system, Segoe UI, Arial Rounded MT Bold, Arial" font-size="160" font-weight="900" fill="#0284c7">G</text>
+</svg>

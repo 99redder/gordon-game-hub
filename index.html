@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#0ea5e9" />
+
+    <title>Gordon Game Hub</title>
+
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+
+    <!-- iPad/iOS PWA hints -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body>
+    <div class="clouds" aria-hidden="true"></div>
+
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand" aria-label="Gordon Game Hub">
+          <div class="brandBadge" aria-hidden="true">
+            <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="44" height="44" rx="6" fill="#0f0f23" stroke="#ff006e" stroke-width="2"/>
+              <path d="M8 32 L16 20 L22 26 L32 12 L40 18" stroke="#39ff14" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="16" cy="20" r="3" fill="#39ff14"/>
+              <circle cx="32" cy="12" r="3" fill="#39ff14"/>
+            </svg>
+          </div>
+          <div class="brandTitle">
+            <span class="line1">GORDON</span>
+            <span class="line2">GAME HUB</span>
+          </div>
+        </div>
+
+        <div class="musicControls">
+          <button id="musicToggle" class="btn secondary" type="button">Music: Off</button>
+        </div>
+      </header>
+
+      <main class="main">
+        <section class="panel" aria-label="Games">
+          <h1 class="h1">Games</h1>
+          <div class="grid" role="list">
+            <!-- Replace hrefs with your real game URLs -->
+            <a class="gameCard" role="listitem" href="#" target="_blank" rel="noopener noreferrer">
+              <div class="icon" aria-hidden="true">🎮</div>
+              <div class="gameName">Game 1</div>
+            </a>
+            <a class="gameCard" role="listitem" href="#" target="_blank" rel="noopener noreferrer">
+              <div class="icon" aria-hidden="true">🧩</div>
+              <div class="gameName">Game 2</div>
+            </a>
+            <a class="gameCard" role="listitem" href="#" target="_blank" rel="noopener noreferrer">
+              <div class="icon" aria-hidden="true">🧠</div>
+              <div class="gameName">Game 3</div>
+            </a>
+            <a class="gameCard" role="listitem" href="#" target="_blank" rel="noopener noreferrer">
+              <div class="icon" aria-hidden="true">🚀</div>
+              <div class="gameName">Game 4</div>
+            </a>
+            <a class="gameCard" role="listitem" href="#" target="_blank" rel="noopener noreferrer">
+              <div class="icon" aria-hidden="true">🐠</div>
+              <div class="gameName">Game 5</div>
+            </a>
+            <a class="gameCard" role="listitem" href="#" target="_blank" rel="noopener noreferrer">
+              <div class="icon" aria-hidden="true">🌈</div>
+              <div class="gameName">Game 6</div>
+            </a>
+          </div>
+        </section>
+
+        <section class="panel" aria-label="Gordon">
+          <div class="gordonWrap" id="gordon">
+            <div class="speech" id="bubble">Tap Gordon to say hello!</div>
+            <div class="hint">(On iPad: tap Gordon. On desktop: hover or tap.)</div>
+
+            <button id="gordonBtn" class="gordonBtn" type="button" aria-label="Gordon">
+              <!-- Gordon: simple original SVG (no external licensing) -->
+              <svg class="gordonSvg" viewBox="0 0 520 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gordon">
+                <defs>
+                  <linearGradient id="shirt" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0" stop-color="#60a5fa"/>
+                    <stop offset="1" stop-color="#2563eb"/>
+                  </linearGradient>
+                  <linearGradient id="hat" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0" stop-color="#fef3c7"/>
+                    <stop offset="1" stop-color="#f59e0b"/>
+                  </linearGradient>
+                </defs>
+
+                <!-- body -->
+                <g>
+                  <path d="M170 430c20-70 70-110 90-110s70 40 90 110" fill="url(#shirt)" opacity="0.95"/>
+                  <path d="M170 430c0 30 40 60 90 60s90-30 90-60" fill="#1e40af" opacity="0.25"/>
+                </g>
+
+                <!-- head -->
+                <g>
+                  <circle cx="260" cy="230" r="110" fill="#fcd5b5"/>
+                  <circle cx="220" cy="230" r="16" fill="#0b2239"/>
+                  <circle cx="300" cy="230" r="16" fill="#0b2239"/>
+                  <circle cx="215" cy="225" r="5" fill="#ffffff" opacity="0.9"/>
+                  <circle cx="295" cy="225" r="5" fill="#ffffff" opacity="0.9"/>
+                  <path d="M240 280c18 18 42 18 60 0" stroke="#b45309" stroke-width="10" stroke-linecap="round" fill="none"/>
+                  <path d="M200 200c18-16 42-16 60 0" stroke="#7c2d12" stroke-width="10" stroke-linecap="round" fill="none" opacity="0.7"/>
+                  <path d="M260 250c-10 12-10 22 0 34" stroke="#b45309" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.55"/>
+                </g>
+
+                <!-- hat -->
+                <g>
+                  <path d="M140 210c30-70 100-110 120-110s90 40 120 110" fill="url(#hat)"/>
+                  <path d="M120 230c60-40 320-40 380 0" fill="#fbbf24" opacity="0.9"/>
+                  <path d="M170 190c30-50 70-80 90-80s60 30 90 80" fill="#fde68a" opacity="0.85"/>
+                </g>
+
+                <!-- left arm -->
+                <g>
+                  <path d="M160 360c-60 20-90 60-95 95" stroke="#2563eb" stroke-width="26" stroke-linecap="round" fill="none"/>
+                  <circle cx="60" cy="460" r="20" fill="#fcd5b5"/>
+                </g>
+
+                <!-- right arm (waving) -->
+                <g class="arm">
+                  <path d="M360 360c60 10 110 50 120 95" stroke="#2563eb" stroke-width="26" stroke-linecap="round" fill="none"/>
+                  <circle cx="490" cy="455" r="20" fill="#fcd5b5"/>
+                </g>
+              </svg>
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Background music (you must provide a royalty-free file) -->
+    <audio id="bgMusic" preload="auto">
+      <source src="./assets/music.mp3" type="audio/mpeg" />
+    </audio>
+
+    <script src="./js/app.js" defer></script>
+  </body>
+</html>

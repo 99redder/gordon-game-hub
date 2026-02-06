@@ -117,7 +117,23 @@ function celebrate() {
   playGoodJobSound();
 }
 
+function sayShape(name) {
+  // Speak the shape name (works on iPad after a user gesture)
+  try {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(name);
+    u.rate = 0.9;
+    u.pitch = 1.15;
+    u.volume = 1;
+    window.speechSynthesis.speak(u);
+  } catch {}
+}
+
 function handlePick(btn, shape) {
+  // Always say the shape they tapped
+  sayShape(shape.name);
+
   if (shape.key === state.target.key) {
     state.score += 1;
     $('#score').textContent = String(state.score);

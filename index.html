@@ -10,6 +10,11 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
 
+    <!-- Fun, kid-friendly font (Google Fonts) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&display=swap" rel="stylesheet" />
+
     <!-- iPad/iOS PWA hints -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -19,7 +24,14 @@
   <body>
     <div class="clouds" aria-hidden="true"></div>
 
-    <div class="shell">
+    <div class="transitionOverlay" id="transitionOverlay" aria-hidden="true">
+      <div class="transitionCard" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <div class="transitionText" id="transitionText">Loading…</div>
+      </div>
+    </div>
+
+    <div class="shell" id="appShell">
       <header class="topbar">
         <div class="brand" aria-label="Gordon Game Hub">
           <div class="brandBadge" aria-hidden="true">
@@ -31,8 +43,8 @@
             </svg>
           </div>
           <div class="brandTitle">
-            <span class="line1">GORDON</span>
-            <span class="line2">GAME HUB</span>
+            <span class="logoText">Gordon Game Hub</span>
+            <span class="logoSub">tap a game • have fun</span>
           </div>
         </div>
 
@@ -46,27 +58,27 @@
           <h1 class="h1">Games</h1>
           <div class="grid" role="list">
             <!-- Replace hrefs with your real game URLs -->
-            <a class="gameCard" role="listitem" href="#" target="_blank" rel="noopener noreferrer">
-              <div class="icon" aria-hidden="true">🎮</div>
-              <div class="gameName">Game 1</div>
+            <a class="gameCard gameLink" role="listitem" href="https://99redder.github.io/bucketgame/" data-url="https://99redder.github.io/bucketgame/">
+              <div class="icon" aria-hidden="true">🐾</div>
+              <div class="gameName">Animal Bucket</div>
             </a>
-            <a class="gameCard" role="listitem" href="#" target="_blank" rel="noopener noreferrer">
+            <a class="gameCard gameLink" role="listitem" href="#" data-url="#">
               <div class="icon" aria-hidden="true">🧩</div>
               <div class="gameName">Game 2</div>
             </a>
-            <a class="gameCard" role="listitem" href="#" target="_blank" rel="noopener noreferrer">
+            <a class="gameCard gameLink" role="listitem" href="#" data-url="#">
               <div class="icon" aria-hidden="true">🧠</div>
               <div class="gameName">Game 3</div>
             </a>
-            <a class="gameCard" role="listitem" href="#" target="_blank" rel="noopener noreferrer">
+            <a class="gameCard gameLink" role="listitem" href="#" data-url="#">
               <div class="icon" aria-hidden="true">🚀</div>
               <div class="gameName">Game 4</div>
             </a>
-            <a class="gameCard" role="listitem" href="#" target="_blank" rel="noopener noreferrer">
+            <a class="gameCard gameLink" role="listitem" href="#" data-url="#">
               <div class="icon" aria-hidden="true">🐠</div>
               <div class="gameName">Game 5</div>
             </a>
-            <a class="gameCard" role="listitem" href="#" target="_blank" rel="noopener noreferrer">
+            <a class="gameCard gameLink" role="listitem" href="#" data-url="#">
               <div class="icon" aria-hidden="true">🌈</div>
               <div class="gameName">Game 6</div>
             </a>

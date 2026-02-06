@@ -1,0 +1,19 @@
+{
+  "name": "Message Gordon",
+  "short_name": "Message",
+  "description": "Leave Gordon a message.",
+  "start_url": "./messages.html?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#87CEEB",
+  "theme_color": "#0ea5e9",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

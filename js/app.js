@@ -148,10 +148,65 @@ function registerSW() {
   });
 }
 
+function loadMessages() {
+  try {
+    const raw = localStorage.getItem('ggh_messages');
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+}
+
+function formatTime(ts) {
+  try {
+    const d = new Date(ts);
+    return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  } catch {
+    return '';
+  }
+}
+
+function renderMessages() {
+  const list = $('#messageList');
+  if (!list) return;
+
+  const msgs = loadMessages().slice(-8).reverse();
+  if (msgs.length === 0) {
+    list.innerHTML = '<div class="messageItem"><div class="messageText">No messages yet.</div><div class="messageMeta">Add one at /messages.html</div></div>';
+    return;
+  }
+
+  list.innerHTML = msgs.map((m) => {
+    const text = (m?.text || '').toString().slice(0, 200);
+    const meta = m?.ts ? formatTime(m.ts) : '';
+    return `
+      <div class="messageItem" role="listitem">
+        <div class="messageText">${escapeHtml(text)}</div>
+        <div class="messageMeta">${escapeHtml(meta)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
 function init() {
   setupGordon();
   setupMusic();
   setupGameTransitions();
+  renderMessages();
+  // refresh messages if another tab updates them
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'ggh_messages') renderMessages();
+  });
   registerSW();
 }
 

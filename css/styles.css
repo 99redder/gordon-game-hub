@@ -120,11 +120,16 @@ body{
 .main{
   flex:1;
   display:grid;
-  grid-template-columns: 1.1fr 1fr;
+  grid-template-columns: 1.25fr 0.85fr;
+  grid-template-rows: 1fr auto;
   gap:18px;
   align-items:stretch;
   min-height:0;
 }
+
+/* Place games big on the left; Gordon smaller in bottom-right */
+.panel[aria-label="Games"]{ grid-column: 1; grid-row: 1 / span 2; }
+.gordonPanel{ grid-column: 2; grid-row: 2; align-self: end; }
 
 .panel{
   background: var(--card);
@@ -188,10 +193,40 @@ body{
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
+  justify-content:flex-end;
   gap:10px;
   height:100%;
 }
+
+.messageBoard{
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(2,132,199,0.18);
+  border-radius: 18px;
+  padding: 10px 12px;
+}
+.messageBoardHeader{display:flex; align-items:baseline; justify-content:space-between; gap:10px;}
+.messageBoardTitle{font-family:"Fredoka", ui-rounded, system-ui; font-weight:800; font-size:16px; color:#06233b;}
+.messageBoardSub{font-size:12px; opacity:0.75; font-weight:700;}
+.messageBoardSub code{font-family: ui-monospace, Menlo, Monaco, monospace; font-weight:800;}
+.messageList{
+  margin-top: 8px;
+  max-height: 120px;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+  padding-right: 2px;
+}
+.messageItem{
+  background: rgba(255,255,255,0.86);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 14px;
+  padding: 8px 10px;
+}
+.messageText{font-weight:800; font-size:14px;}
+.messageMeta{margin-top:2px; font-size:11px; font-weight:700; opacity:0.65;}
 
 .speech{
   max-width: 320px;
@@ -212,9 +247,9 @@ body{
 }
 
 .gordonSvg{
-  width:min(380px, 92%);
-  height:auto;
-  filter: drop-shadow(0 18px 24px rgba(0,0,0,0.18));
+  width: min(280px, 88%);
+  height: auto;
+  filter: drop-shadow(0 16px 22px rgba(0,0,0,0.16));
 }
 
 /* wave animation targets */
@@ -284,5 +319,8 @@ body{
 
 @media (max-width: 860px){
   body{overflow:auto}
-  .main{grid-template-columns: 1fr;}
+  .main{grid-template-columns: 1fr; grid-template-rows: auto;}
+  .panel[aria-label="Games"]{ grid-column: auto; grid-row: auto; }
+  .gordonPanel{ grid-column: auto; grid-row: auto; align-self: stretch; }
+  .gordonSvg{ width: min(320px, 92%); }
 }

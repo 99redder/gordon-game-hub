@@ -3,11 +3,15 @@ const CACHE_NAME = 'gordon-game-hub-v1';
 const ASSETS = [
   './',
   './index.html',
+  './messages.html',
   './manifest.webmanifest',
+  './messages-manifest.webmanifest',
   './css/styles.css',
   './js/app.js',
+  './js/messages.js',
   './icons/icon.svg',
-  './assets/music.mp3'
+  './assets/music.mp3',
+  './assets/MUSIC_LICENSE.txt'
 ];
 
 self.addEventListener('install', (event) => {

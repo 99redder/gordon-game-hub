@@ -6,7 +6,8 @@ const ASSETS = [
   './manifest.webmanifest',
   './css/styles.css',
   './js/app.js',
-  './icons/icon.svg'
+  './icons/icon.svg',
+  './assets/music.mp3'
 ];
 
 self.addEventListener('install', (event) => {

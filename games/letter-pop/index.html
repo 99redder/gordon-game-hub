@@ -38,7 +38,7 @@
         inset: 0;
         pointer-events: none;
         opacity: 0;
-        z-index: 0; /* behind the UI; above sky */
+        z-index: 20; /* overlay so it's obvious */
       }
       .confetti.show{ opacity: 1; animation: confettiFade 1400ms ease-out forwards; }
       @keyframes confettiFade{

@@ -1,5 +1,5 @@
 /* Gordon Game Hub service worker (basic offline cache) */
-const CACHE_NAME = 'gordon-game-hub-v13';
+const CACHE_NAME = 'gordon-game-hub-v14';
 const ASSETS = [
   './',
   './index.html',
@@ -27,7 +27,10 @@ const ASSETS = [
   './games/number-count/number-count.js',
   './games/coloring/',
   './games/coloring/index.html',
-  './games/coloring/coloring.js'
+  './games/coloring/coloring.js',
+  './games/dress-up/',
+  './games/dress-up/index.html',
+  './games/dress-up/dress-up.js'
 ];
 
 self.addEventListener('install', (event) => {

@@ -172,8 +172,51 @@ function setupGameTransitions() {
 
 function registerSW() {
   if (!('serviceWorker' in navigator)) return;
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
+
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('./sw.js');
+
+      // Always check for an updated SW on each load.
+      reg.update().catch(() => {});
+
+      // If a new SW is already waiting, activate it and reload once.
+      const reloadOnceKey = 'ggh_sw_reloaded';
+
+      function activateWaitingWorker() {
+        if (!reg.waiting) return;
+        // Avoid infinite reload loops.
+        if (sessionStorage.getItem(reloadOnceKey) === '1') return;
+        sessionStorage.setItem(reloadOnceKey, '1');
+        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
+
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        if (!nw) return;
+        nw.addEventListener('statechange', () => {
+          if (nw.state === 'installed') {
+            // If we already had a controller, this is an update.
+            if (navigator.serviceWorker.controller) {
+              activateWaitingWorker();
+            }
+          }
+        });
+      });
+
+      // When the new SW takes control, reload to pick up latest assets.
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        // controllerchange can fire multiple times; reload once.
+        if (sessionStorage.getItem(reloadOnceKey) === '1') {
+          window.location.reload();
+        }
+      });
+
+      // In case the update finished before listeners attached.
+      activateWaitingWorker();
+    } catch {
+      // ignore
+    }
   });
 }
 

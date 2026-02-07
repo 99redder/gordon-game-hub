@@ -17,20 +17,20 @@
         box-shadow: 0 18px 46px rgba(0,0,0,0.16); backdrop-filter: blur(8px);
         display:flex; flex-direction:column; justify-content:center; gap: 14px;
       }
-      .prompt{ text-align:center; font-weight: 900; font-size: clamp(18px, 3vw, 26px); opacity:0.85; }
+      .prompt{ text-align:center; font-weight: 900; font-size: clamp(26px, 4vw, 38px); opacity:0.85; font-family:"Fredoka", ui-rounded, system-ui; }
       .target{ text-align:center; font-size: clamp(88px, 14vw, 140px); font-weight: 900; }
       .dots{ display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; max-width: 720px; margin: 0 auto; width:100%; }
       @media (min-width: 720px){ .dots{ grid-template-columns: repeat(5, minmax(0,1fr)); } }
       .dot{ height: clamp(86px, 12vw, 120px); border-radius: 28px; border: none; cursor:pointer;
         font-size: clamp(54px, 7vw, 84px);
-        background: rgba(255,255,255,0.92);
+        background: linear-gradient(135deg, rgba(250,204,21,0.3), rgba(251,146,60,0.3));
         box-shadow: 0 14px 30px rgba(0,0,0,0.16);
       }
-      .dot.on{ background: rgba(34,211,238,0.40); }
+      .dot.on{ background: linear-gradient(135deg, rgba(34,211,238,0.5), rgba(52,211,153,0.5)); }
       .good{ outline: 7px solid rgba(16,185,129,0.50); }
       .bad{ outline: 7px solid rgba(239,68,68,0.38); }
-      .status{ text-align:center; font-weight: 900; font-size: 20px; min-height: 28px; }
-      .scoreRow{ display:flex; align-items:center; justify-content:center; gap:14px; font-weight: 900; font-size: 18px; opacity:0.85; }
+      .status{ text-align:center; font-weight: 900; font-size: clamp(24px, 3.5vw, 34px); min-height: 28px; font-family:"Fredoka", ui-rounded, system-ui; }
+      .scoreRow{ display:flex; align-items:center; justify-content:center; gap:14px; font-weight: 900; font-size: clamp(24px, 3.5vw, 34px); opacity:0.85; font-family:"Fredoka", ui-rounded, system-ui; }
 
       /* Confetti celebration (very lightweight) */
       .confetti{
@@ -84,7 +84,7 @@
       <div class="topRow">
         <h1 class="title">Count & Tap</h1>
         <div class="hud">
-          <a class="btn secondary" href="../../index.html">← Hub</a>
+          <a class="btn hubBtn" href="../../index.html">← Back to Hub</a>
           <button class="btn secondary iconBtn" id="musicToggle" type="button" aria-label="Music" title="Music"></button>
         </div>
       </div>

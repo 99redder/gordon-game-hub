@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#0ea5e9" />
+    <title>Dress Up • Gordon Game Hub</title>
+    <link rel="stylesheet" href="../../css/styles.css" />
+    <style>
+      body{ overflow:auto; }
+      .gameShell{ min-height: 100vh; padding: 14px; display:flex; flex-direction:column; gap: 10px; }
+      .topRow{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+      .title{ font-family:"Fredoka", ui-rounded, system-ui; font-weight: 900; font-size: clamp(28px, 4.5vw, 44px); color:#06233b; margin:0; }
+      .hud{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-weight: 900; }
+
+      .workspace{
+        flex: 1;
+        background: rgba(255,255,255,0.86);
+        border:2px solid rgba(255,255,255,0.65);
+        border-radius: 26px;
+        box-shadow: 0 18px 46px rgba(0,0,0,0.16);
+        backdrop-filter: blur(8px);
+        padding: 12px;
+        display:grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto;
+        gap: 12px;
+        min-height: 0;
+      }
+
+      @media (min-width: 860px){
+        .workspace{ grid-template-columns: 1fr 1fr; grid-template-rows: 1fr auto; }
+        .controls{ grid-column: 2; grid-row: 1 / span 2; }
+        .stage{ grid-column: 1; grid-row: 1; }
+        .bottomBar{ grid-column: 1; grid-row: 2; }
+      }
+
+      .stage{
+        border-radius: 22px;
+        background: rgba(255,255,255,0.92);
+        border: 2px solid rgba(14,165,233,0.20);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6);
+        display:grid;
+        place-items:center;
+        min-height: 0;
+        padding: 12px;
+      }
+
+      .avatar{
+        width: min(520px, 92vw);
+        max-height: 62vh;
+        height: auto;
+        filter: drop-shadow(0 16px 22px rgba(0,0,0,0.14));
+      }
+
+      .controls{
+        border-radius: 22px;
+        background: rgba(255,255,255,0.78);
+        border: 2px solid rgba(255,255,255,0.55);
+        padding: 12px;
+        display:flex;
+        flex-direction:column;
+        gap: 12px;
+      }
+
+      .sectionTitle{ font-weight: 900; opacity:0.8; }
+
+      .itemRow{ display:flex; gap:10px; flex-wrap:wrap; }
+      .itemBtn{
+        width: 72px;
+        height: 72px;
+        padding: 0;
+        border-radius: 22px;
+        display:grid;
+        place-items:center;
+        font-size: 34px;
+        line-height: 1;
+      }
+      .itemBtn.selected{ outline: 7px solid rgba(14,165,233,0.35); }
+
+      .palette{ display:flex; gap:10px; flex-wrap:wrap; }
+      .colorBtn{
+        width: 54px;
+        height: 54px;
+        border-radius: 18px;
+        border: 3px solid rgba(255,255,255,0.9);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.14);
+        cursor: pointer;
+        padding: 0;
+      }
+      .colorBtn.selected{ outline: 7px solid rgba(14,165,233,0.30); }
+
+      .bottomBar{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 10px;
+        flex-wrap:wrap;
+      }
+
+      .hint{ font-weight:900; opacity:0.75; margin:0; }
+
+      /* Confetti celebration */
+      .confetti{
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0;
+        z-index: 20;
+      }
+      .confetti.show{ opacity: 1; animation: confettiFade 1400ms ease-out forwards; }
+      @keyframes confettiFade{
+        0%{ opacity: 0; }
+        8%{ opacity: 1; }
+        70%{ opacity: 1; }
+        100%{ opacity: 0; }
+      }
+      .confetti::before{
+        content:"";
+        position:absolute;
+        inset:-20% -10%;
+        background:
+          radial-gradient(circle at 10% 10%, rgba(250,204,21,0.75) 0 10px, transparent 11px),
+          radial-gradient(circle at 22% 18%, rgba(52,211,153,0.75) 0 10px, transparent 11px),
+          radial-gradient(circle at 34% 12%, rgba(96,165,250,0.75) 0 10px, transparent 11px),
+          radial-gradient(circle at 46% 20%, rgba(244,114,182,0.75) 0 10px, transparent 11px),
+          radial-gradient(circle at 58% 14%, rgba(167,139,250,0.75) 0 10px, transparent 11px),
+          radial-gradient(circle at 70% 22%, rgba(34,211,238,0.75) 0 10px, transparent 11px),
+          radial-gradient(circle at 82% 16%, rgba(251,113,133,0.75) 0 10px, transparent 11px),
+          radial-gradient(circle at 92% 24%, rgba(250,204,21,0.75) 0 10px, transparent 11px);
+        transform: translateY(-8%);
+        animation: confettiFall 1400ms ease-out forwards;
+      }
+      @keyframes confettiFall{
+        0%{ transform: translateY(-22%); }
+        100%{ transform: translateY(34%); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="clouds" aria-hidden="true"></div>
+    <div class="confetti" id="confetti" aria-hidden="true"></div>
+
+    <div class="gameShell">
+      <div class="topRow">
+        <h1 class="title">Dress Up</h1>
+        <div class="hud">
+          <a class="btn secondary" href="../../index.html">← Hub</a>
+          <button class="btn secondary iconBtn" id="musicToggle" type="button" aria-label="Music" title="Music"></button>
+        </div>
+      </div>
+
+      <div class="workspace" aria-label="Dress up game">
+        <div class="stage" aria-label="Character">
+          <!-- Simple SVG character with layers -->
+          <svg class="avatar" viewBox="0 0 420 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dress up character">
+            <!-- Body -->
+            <circle cx="210" cy="170" r="88" fill="#fcd5b5" />
+            <circle cx="178" cy="165" r="10" fill="#0b2239" />
+            <circle cx="242" cy="165" r="10" fill="#0b2239" />
+            <path d="M190 200 C205 216 215 216 230 200" stroke="#b45309" stroke-width="10" stroke-linecap="round" fill="none" />
+
+            <!-- Shirt -->
+            <path id="shirt" d="M115 510c14-118 76-188 95-188s81 70 95 188" fill="#60a5fa" opacity="0.95" />
+            <!-- Pants -->
+            <path id="pants" d="M125 510c16-92 40-140 58-160h54c18 20 42 68 58 160" fill="#3b82f6" opacity="0.92" />
+
+            <!-- Glasses -->
+            <g id="glasses" opacity="1">
+              <rect x="138" y="150" width="70" height="42" rx="16" fill="none" stroke="#0f172a" stroke-width="8" opacity="0.75" />
+              <rect x="212" y="150" width="70" height="42" rx="16" fill="none" stroke="#0f172a" stroke-width="8" opacity="0.75" />
+              <path d="M208 170h4" stroke="#0f172a" stroke-width="8" stroke-linecap="round" opacity="0.6" />
+            </g>
+
+            <!-- Hat -->
+            <g id="hat" opacity="1">
+              <path d="M120 130c30-70 70-95 90-95s60 25 90 95" fill="#fbbf24" opacity="0.95" />
+              <path d="M90 150c52-34 236-34 280 0" fill="#f59e0b" opacity="0.9" />
+            </g>
+
+            <!-- Accessory: Bowtie -->
+            <g id="bow" opacity="0">
+              <path d="M180 248c-22 0-42 14-42 28s20 28 42 28c12 0 20-6 30-14" fill="#fb7185" opacity="0.92" />
+              <path d="M240 248c22 0 42 14 42 28s-20 28-42 28c-12 0-20-6-30-14" fill="#fb7185" opacity="0.92" />
+              <circle cx="210" cy="276" r="10" fill="#0f172a" opacity="0.35" />
+            </g>
+          </svg>
+        </div>
+
+        <div class="controls" aria-label="Controls">
+          <div>
+            <div class="sectionTitle">Pick item</div>
+            <div class="itemRow">
+              <button class="btn secondary itemBtn" data-item="hat" aria-label="Hat" title="Hat">👒</button>
+              <button class="btn secondary itemBtn" data-item="shirt" aria-label="Shirt" title="Shirt">👕</button>
+              <button class="btn secondary itemBtn" data-item="pants" aria-label="Pants" title="Pants">👖</button>
+              <button class="btn secondary itemBtn" data-item="glasses" aria-label="Glasses" title="Glasses">👓</button>
+              <button class="btn secondary itemBtn" data-item="bow" aria-label="Bow" title="Bow">🎀</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="sectionTitle">Pick color</div>
+            <div class="palette" aria-label="Color palette">
+              <button class="colorBtn" data-color="#ef4444" style="background:#ef4444" aria-label="Red"></button>
+              <button class="colorBtn" data-color="#f97316" style="background:#f97316" aria-label="Orange"></button>
+              <button class="colorBtn" data-color="#eab308" style="background:#eab308" aria-label="Yellow"></button>
+              <button class="colorBtn" data-color="#22c55e" style="background:#22c55e" aria-label="Green"></button>
+              <button class="colorBtn" data-color="#3b82f6" style="background:#3b82f6" aria-label="Blue"></button>
+              <button class="colorBtn" data-color="#a855f7" style="background:#a855f7" aria-label="Purple"></button>
+              <button class="colorBtn" data-color="#0f172a" style="background:#0f172a" aria-label="Black"></button>
+              <button class="colorBtn" data-color="#ffffff" style="background:#ffffff; border-color: rgba(15,23,42,0.2)" aria-label="White"></button>
+            </div>
+          </div>
+
+          <div class="bottomBar">
+            <p class="hint">Tap an item, then a color.</p>
+            <button class="btn" id="randomBtn" type="button">Surprise!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <audio id="bgMusic" preload="auto">
+      <source src="../../assets/music.mp3" type="audio/mpeg" />
+    </audio>
+
+    <script src="./dress-up.js" defer></script>
+  </body>
+</html>

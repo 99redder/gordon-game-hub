@@ -1,5 +1,5 @@
 /* Gordon Game Hub service worker (basic offline cache) */
-const CACHE_NAME = 'gordon-game-hub-v16';
+const CACHE_NAME = 'gordon-game-hub-v17';
 const ASSETS = [
   './',
   './index.html',
@@ -30,7 +30,16 @@ const ASSETS = [
   './games/coloring/coloring.js',
   './games/dress-up/',
   './games/dress-up/index.html',
-  './games/dress-up/dress-up.js'
+  './games/dress-up/dress-up.js',
+  './games/trace-trail/',
+  './games/trace-trail/index.html',
+  './games/trace-trail/trace-trail.js',
+  './games/peekaboo-pairs/',
+  './games/peekaboo-pairs/index.html',
+  './games/peekaboo-pairs/peekaboo-pairs.js',
+  './games/pet-parade/',
+  './games/pet-parade/index.html',
+  './games/pet-parade/pet-parade.js'
 ];
 
 self.addEventListener('install', (event) => {

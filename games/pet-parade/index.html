@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#0ea5e9" />
+    <title>Pet Parade • Gordon Game Hub</title>
+    <link rel="stylesheet" href="../../css/styles.css" />
+    <style>
+      body{overflow:auto}
+      .gameShell{min-height:100vh;padding:16px;display:flex;flex-direction:column;gap:12px}
+      .topRow{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+      .title{font-family:"Fredoka",ui-rounded,system-ui;font-weight:900;font-size:clamp(28px,4.5vw,44px);color:#06233b;margin:0}
+      .hud{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:900}
+      .card{background:rgba(255,255,255,.9);border:2px solid rgba(255,255,255,.7);border-radius:26px;padding:14px;box-shadow:0 18px 46px rgba(0,0,0,.16)}
+      .prompt{text-align:center;font-weight:900;font-size:clamp(24px,4vw,34px);font-family:"Fredoka",ui-rounded,system-ui;margin-bottom:8px}
+      .stage{display:flex;justify-content:center;align-items:center;min-height:240px;border-radius:20px;background:linear-gradient(180deg,#bae6fd,#a7f3d0);font-size:5rem}
+      .tools{display:grid;grid-template-columns:repeat(4,minmax(70px,1fr));gap:10px;margin-top:12px}
+      .tool{height:82px;border:none;border-radius:18px;background:linear-gradient(135deg,#ddd6fe,#bfdbfe);font-size:2rem;cursor:pointer}
+      .row{display:flex;justify-content:center;gap:12px;margin-top:12px;flex-wrap:wrap;font-family:"Fredoka",ui-rounded,system-ui;font-size:clamp(22px,3vw,30px);font-weight:900}
+      .badge{padding:8px 14px;border-radius:14px;background:#fff7ed;border:2px solid #fdba74}
+      .fx{position:fixed;inset:0;pointer-events:none;opacity:0;z-index:20}
+      .fx.show{opacity:1;animation:fade 900ms ease-out forwards}
+      @keyframes fade{0%{opacity:0}12%{opacity:1}100%{opacity:0}}
+      .fx::before{content:"🎉🎊✨⭐";position:absolute;left:50%;top:24%;transform:translateX(-50%);font-size:clamp(32px,6vw,64px)}
+    </style>
+  </head>
+  <body>
+    <div class="clouds" aria-hidden="true"></div>
+    <div id="fx" class="fx" aria-hidden="true"></div>
+    <div class="gameShell">
+      <div class="topRow">
+        <h1 class="title">Pet Parade</h1>
+        <div class="hud">
+          <a class="btn hubBtn" href="../../index.html">← Back to Hub</a>
+          <button class="btn secondary iconBtn" id="musicToggle" type="button" aria-label="Music" title="Music"></button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="prompt">Dress up your pet and earn hearts!</div>
+        <div class="stage"><span id="pet">🐻</span><span id="accessory"></span></div>
+        <div id="tools" class="tools"></div>
+        <div class="row">
+          <div class="badge">Hearts: <span id="hearts">0</span></div>
+          <div class="badge">Pet: <span id="petName">Bear</span></div>
+        </div>
+      </div>
+    </div>
+    <audio id="bgMusic" preload="auto"><source src="../../assets/music.mp3" type="audio/mpeg"/></audio>
+    <script src="./pet-parade.js" defer></script>
+  </body>
+</html>

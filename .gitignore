@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+
+# Local Firebase config
+js/firebase-config.local.js
+.env
+.env.local
+.env.*.local

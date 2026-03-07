@@ -1,16 +1,11 @@
 /* Firebase configuration for Gordon Game Hub.
-   Replace the placeholder values below with your real Firebase config
-   from https://console.firebase.google.com */
+   Loaded from local untracked file: js/firebase-config.local.js */
 
-const firebaseConfig = {
-  apiKey: "__REMOVED_GOOGLE_API_KEY__",
-  authDomain: "gordon-game-hub.firebaseapp.com",
-  databaseURL: "https://gordon-game-hub-default-rtdb.firebaseio.com",
-  projectId: "gordon-game-hub",
-  storageBucket: "gordon-game-hub.firebasestorage.app",
-  messagingSenderId: "525086027738",
-  appId: "1:525086027738:web:ada6470da2422d1e3bdae3"
-};
+const firebaseConfig = window.GORDON_FIREBASE_CONFIG || null;
+
+if (!firebaseConfig || !firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.appId) {
+  throw new Error('Missing GORDON_FIREBASE_CONFIG. Copy js/firebase-config.local.example.js to js/firebase-config.local.js');
+}
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();

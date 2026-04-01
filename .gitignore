@@ -6,3 +6,4 @@ js/firebase-config.local.js
 .env
 .env.local
 .env.*.local
+.claude/worktrees/sad-kirch/

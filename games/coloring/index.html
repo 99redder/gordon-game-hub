@@ -2,14 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
     <meta name="theme-color" content="#0ea5e9" />
     <title>Coloring Time • Gordon Game Hub</title>
     <link rel="stylesheet" href="../../css/styles.css" />
     <style>
       /* Toddler-friendly coloring: full-screen, big buttons */
-      body{ overflow:auto; }
-      .gameShell{ min-height: 100vh; padding: 14px; display:flex; flex-direction:column; gap: 10px; }
+      html, body{ overflow:hidden; height:100%; }
+      body{ touch-action: none; }
+      .gameShell{ height: 100%; padding: 14px; display:flex; flex-direction:column; gap: 10px; box-sizing: border-box; }
       .topRow{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
       .title{ font-family:"Fredoka", ui-rounded, system-ui; font-weight: 900; font-size: clamp(28px, 4.5vw, 44px); color:#06233b; margin:0; }
       .hud{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-weight: 900; }

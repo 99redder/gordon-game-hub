@@ -76,6 +76,17 @@ function setupMusic() {
   state.musicEnabled = saved === 'on';
   renderMusicButton();
 
+  // Pause music when the page becomes hidden (app backgrounded or closed)
+  const handleVisibilityChange = () => {
+    if (document.hidden && state.musicEnabled) {
+      audio.pause();
+    } else if (!document.hidden && state.musicEnabled) {
+      // Resume if coming back and music was enabled
+      audio.play().catch(() => {});
+    }
+  };
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+
   // iPad/iOS blocks autoplay until a user gesture.
   // We'll attempt to start as soon as the user taps anywhere if music is enabled.
   const tryAutostart = () => {
@@ -110,6 +121,13 @@ function setupMusic() {
     renderMusicButton();
   }
 
+  // Pause music when page is about to unload (app closed or tab closed)
+  window.addEventListener('beforeunload', () => {
+    if (state.musicEnabled) {
+      audio.pause();
+    }
+  });
+
   function icon(on) {
     // speaker icon (simple + kid-friendly)
     if (on) {
@@ -143,6 +161,7 @@ function setupMusic() {
 function setupGameTransitions() {
   const overlay = $('#transitionOverlay');
   const text = $('#transitionText');
+  const audio = $('#bgMusic');
 
   document.querySelectorAll('.gameLink').forEach((a) => {
     a.addEventListener('click', (e) => {
@@ -153,6 +172,12 @@ function setupGameTransitions() {
       if (!url || url === '#') {
         e.preventDefault();
         return;
+      }
+
+      // Pause music before navigating
+      if (state.musicEnabled && audio) {
+        audio.pause();
+        audio.currentTime = 0;
       }
 
       e.preventDefault();

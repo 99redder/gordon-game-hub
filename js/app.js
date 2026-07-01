@@ -13,7 +13,10 @@ const state = {
     "Take a deep breath—then play!",
     "Gordon says: you got this!",
     "Want to hear a song?",
-    "Let's go on an adventure!"
+    "Let's go on an adventure!",
+    "Gordie, no! Bad!",
+    "Be careful!",
+    "B L I P P I"
   ],
   lastPhrase: null,
   musicEnabled: false,

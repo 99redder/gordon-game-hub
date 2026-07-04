@@ -1,5 +1,5 @@
 /* Gordon Game Hub service worker (basic offline cache) */
-const CACHE_NAME = 'gordon-game-hub-v20';
+const CACHE_NAME = 'gordon-game-hub-v21';
 const ASSETS = [
   './',
   './index.html',
@@ -23,6 +23,9 @@ const ASSETS = [
   './games/shape-safari/',
   './games/shape-safari/index.html',
   './games/shape-safari/shape-safari.js',
+  './games/shape-words/',
+  './games/shape-words/index.html',
+  './games/shape-words/shape-words.js',
   './games/number-count/',
   './games/number-count/index.html',
   './games/number-count/number-count.js',

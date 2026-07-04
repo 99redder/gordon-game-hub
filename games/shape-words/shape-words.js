@@ -7,52 +7,62 @@ const SHAPES = [
   {
     key: 'pentagon',
     name: 'Pentagon',
-    hint: 'A pentagon has 5 sides.',
+    sides: 5,
+    hint: 'Pentagon. 5 sides.',
     color: '#60a5fa',
     points: '100,20 176,75 147,164 53,164 24,75'
   },
   {
     key: 'hexagon',
     name: 'Hexagon',
-    hint: 'A hexagon has 6 sides.',
+    sides: 6,
+    hint: 'Hexagon. 6 sides.',
     color: '#34d399',
     points: '100,18 171,59 171,141 100,182 29,141 29,59'
   },
   {
     key: 'octagon',
     name: 'Octagon',
-    hint: 'An octagon has 8 sides.',
+    sides: 8,
+    hint: 'Octagon. 8 sides.',
     color: '#fb7185',
     points: '72,20 128,20 180,72 180,128 128,180 72,180 20,128 20,72'
   },
   {
     key: 'diamond',
     name: 'Diamond',
-    hint: 'A diamond looks like a tipped square.',
+    sides: 4,
+    hint: 'Diamond. 4 sides.',
     color: '#fbbf24',
     points: '100,18 182,100 100,182 18,100'
   },
   {
     key: 'rectangle',
     name: 'Rectangle',
-    hint: 'A rectangle has 4 sides.',
+    sides: 4,
+    hint: 'Rectangle. 4 sides.',
     color: '#a78bfa',
     rect: true
   },
   {
     key: 'oval',
     name: 'Oval',
-    hint: 'An oval is like a stretched circle.',
+    sides: 0,
+    hint: 'Oval. No straight sides.',
     color: '#22d3ee',
     oval: true
   }
 ];
 
+const ROUNDS_PER_SET = 8;
+
 const state = {
   target: SHAPES[0],
   score: 0,
   musicEnabled: true,
-  lastKey: null
+  lastKey: null,
+  round: 1,
+  locked: false
 };
 
 function randInt(max) {
@@ -106,10 +116,14 @@ function pickWords() {
   return shuffle(Array.from(choices));
 }
 
-function speak(text) {
+function promptText() {
+  return `Which word says ${state.target.name}?`;
+}
+
+function speak(text, cancel = true) {
   try {
     if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
+    if (cancel) window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.9;
     utterance.pitch = 1.12;
@@ -118,10 +132,23 @@ function speak(text) {
   } catch {}
 }
 
+function renderProgress() {
+  const row = $('#roundRow');
+  row.innerHTML = '';
+  for (let i = 1; i <= ROUNDS_PER_SET; i++) {
+    const dot = document.createElement('span');
+    dot.className = i < state.round ? 'star done' : 'star';
+    row.appendChild(dot);
+  }
+}
+
 function renderRound() {
+  state.locked = false;
   $('#shapeArt').innerHTML = shapeSvg(state.target);
-  $('#prompt').textContent = 'Pick the word for this shape';
+  $('#prompt').textContent = 'Pick the word';
+  $('#shapeBadge').textContent = state.target.sides === 0 ? 'round shape' : `${state.target.sides} sides`;
   $('#feedback').textContent = '';
+  renderProgress();
 
   const wordGrid = $('#wordGrid');
   wordGrid.innerHTML = '';
@@ -186,22 +213,40 @@ function celebrate() {
 
 function nextRound() {
   window.setTimeout(() => {
+    state.round += 1;
     pickTarget();
     renderRound();
-    speak(`Which word says ${state.target.name}?`);
+    speak(promptText());
   }, 600);
 }
 
+function finishSet() {
+  $('#feedback').textContent = 'Shape star!';
+  speak('Shape star! Let us play again.');
+  window.setTimeout(() => {
+    state.round = 1;
+    pickTarget();
+    renderRound();
+    speak(promptText());
+  }, 1300);
+}
+
 function handlePick(btn, shape) {
+  if (state.locked) return;
   speak(shape.name);
 
   if (shape.key === state.target.key) {
+    state.locked = true;
     state.score += 1;
     $('#score').textContent = String(state.score);
     $('#feedback').textContent = state.target.hint;
+    for (const wordBtn of document.querySelectorAll('.wordBtn')) {
+      wordBtn.disabled = true;
+    }
     flash(btn, 'good');
     celebrate();
-    nextRound();
+    if (state.round >= ROUNDS_PER_SET) finishSet();
+    else nextRound();
     return;
   }
 
@@ -279,9 +324,10 @@ function init() {
   pickTarget();
   renderRound();
   $('#score').textContent = String(state.score);
+  $('#speakBtn').addEventListener('click', () => speak(promptText()));
 
   window.setTimeout(() => {
-    speak(`Which word says ${state.target.name}?`);
+    speak(promptText());
   }, 500);
 }
 

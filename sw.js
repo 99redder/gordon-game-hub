@@ -1,5 +1,5 @@
 /* Gordon Game Hub service worker (basic offline cache) */
-const CACHE_NAME = 'gordon-game-hub-v19';
+const CACHE_NAME = 'gordon-game-hub-v20';
 const ASSETS = [
   './',
   './index.html',
@@ -9,6 +9,7 @@ const ASSETS = [
   './css/styles.css',
   './js/app.js',
   './js/messages.js',
+  './js/zoom-lock.js',
   './js/firebase-config.js',
   './js/app-check.js',
   './icons/icon.svg',

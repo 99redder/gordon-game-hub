@@ -14,9 +14,13 @@ const state = {
     "Gordon says: you got this!",
     "Want to hear a song?",
     "Let's go on an adventure!",
-    "Gordie, no! Bad!",
-    "Be careful!",
-    "B L I P P I"
+    "Can you roar like a lion? Roooar!",
+    "Can you stretch as tall as a giraffe?",
+    "What color will you paint today?",
+    "Let’s wiggle our fingers! Wiggle, wiggle, wiggle!",
+    "Knock knock! Who’s there? A very silly penguin!",
+    "Can you find something blue?",
+    "Sending you a great big hug!"
   ],
   lastPhrase: null,
   musicEnabled: false,
@@ -40,6 +44,11 @@ function speak(text) {
     u.rate = 0.95;
     u.pitch = 1.15;
     u.volume = 1;
+    const music = $('#bgMusic');
+    if (music) music.volume = 0.06;
+    const restore = () => { if (music) music.volume = 0.16; };
+    u.onend = restore;
+    u.onerror = restore;
     window.speechSynthesis.speak(u);
   } catch {}
 }
@@ -64,11 +73,7 @@ function setupGordon() {
   const btn = $('#gordonBtn');
   // iPad doesn't have hover; use tap/click.
   btn.addEventListener('click', waveAndTalk);
-  // desktop hover support
-  btn.addEventListener('mouseenter', () => {
-    // small debounce to avoid spam
-    if (window.matchMedia('(hover: hover)').matches) waveAndTalk();
-  });
+
 }
 
 function setupMusic() {
@@ -101,7 +106,7 @@ function setupMusic() {
 
   async function start() {
     try {
-      audio.volume = 0.45;
+      audio.volume = 0.16;
       audio.loop = true;
       await audio.play();
       state.musicEnabled = true;
@@ -112,7 +117,7 @@ function setupMusic() {
       state.musicEnabled = false;
       localStorage.setItem('ggh_music', 'off');
       renderMusicButton();
-      alert('Tap the Music button again to start (iPad autoplay rules).');
+
     }
   }
 
@@ -162,64 +167,45 @@ function setupMusic() {
 }
 
 function setupGameTransitions() {
-  const overlay = $('#transitionOverlay');
-  const text = $('#transitionText');
-  const audio = $('#bgMusic');
-
-  document.querySelectorAll('.gameLink').forEach((a) => {
-    a.addEventListener('click', (e) => {
-      // allow normal browser "open in new tab" behaviors
-      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-
-      const url = a.getAttribute('data-url') || a.getAttribute('href');
-      if (!url || url === '#') {
-        e.preventDefault();
-        return;
-      }
-
-      // Pause music before navigating
-      if (state.musicEnabled && audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
-
-      e.preventDefault();
-
-      // Show app-like transition
-      const label = a.getAttribute('data-label') || a.getAttribute('aria-label') || 'Game';
-      text.textContent = `Loading ${label}…`;
-      overlay.classList.add('show');
-
-      // small delay so it feels like an in-app navigation
-      window.setTimeout(() => {
-        window.location.href = url;
-      }, 320);
+  // Native navigation is immediate and works with browser back / restored pages.
+  document.querySelectorAll('.gameLink').forEach((link) => {
+    link.addEventListener('click', () => {
+      $('#bgMusic').pause();
+      window.speechSynthesis?.cancel();
     });
   });
 }
 
 function registerSW() {
   if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    reg.update().catch(() => {});
+  }).catch(() => {});
+  // Updates wait until open app windows close; never reload a child's game.
+}
 
-  window.addEventListener('load', async () => {
-    try {
-      const reg = await navigator.serviceWorker.register('./sw.js');
-
-      // Always check for an updated SW on each load.
-      reg.update().catch(() => {});
-
-      // When the new SW takes control, reload once to pick up latest assets.
-      // Use an in-memory flag to prevent infinite reload loops.
-      let swReloading = false;
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (swReloading) return;
-        swReloading = true;
-        window.location.reload();
-      });
-    } catch {
-      // ignore
-    }
+async function loadFamilyMessages() {
+  const load = (src) => new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
   });
+  try {
+    await load('./js/firebase-config.local.js');
+    if (!window.GORDON_FIREBASE_CONFIG) return;
+    await load('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
+    await Promise.all([
+      load('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js'),
+      load('https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js'),
+    ]);
+    await load('./js/firebase-config.js');
+    await load('./js/app-check.js');
+    setupFirebaseMessages();
+  } catch {
+    // Family messages are optional; all play stays available offline.
+  }
 }
 
 /* ---- Firebase message cycling display ---- */
@@ -233,6 +219,7 @@ const messageState = {
 };
 
 function setupFirebaseMessages() {
+  if (typeof db === 'undefined') return;
   const ref = db.ref('messages').orderByChild('ts').limitToLast(50);
 
   ref.on('value', (snapshot) => {
@@ -257,12 +244,14 @@ function showCurrentMessage() {
   card.classList.remove('msg-enter', 'msg-exit', 'msg-empty');
 
   if (messageState.messages.length === 0) {
-    textEl.textContent = 'No messages yet!';
+    $('#messageDisplay').hidden = true;
+    textEl.textContent = '';
     fromEl.textContent = 'Send one from the Messages app';
     card.classList.add('msg-empty');
     return;
   }
 
+  $('#messageDisplay').hidden = false;
   const msg = messageState.messages[messageState.currentIndex];
   textEl.textContent = msg.text || '';
   fromEl.textContent = msg.from ? `-- ${msg.from}` : '';
@@ -273,7 +262,12 @@ function showCurrentMessage() {
 }
 
 function cycleToNextMessage() {
-  if (messageState.messages.length <= 1) return;
+  if (document.hidden || messageState.messages.length <= 1) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    messageState.currentIndex = (messageState.currentIndex + 1) % messageState.messages.length;
+    showCurrentMessage();
+    return;
+  }
   if (messageState.isAnimating) return;
 
   messageState.isAnimating = true;
@@ -308,8 +302,12 @@ function init() {
   setupGordon();
   setupMusic();
   setupGameTransitions();
-  setupFirebaseMessages();
+  $('#messageDisplay').hidden = true;
   registerSW();
+  setTimeout(loadFamilyMessages, 1500);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) window.speechSynthesis?.cancel();
+  });
 }
 
 init();

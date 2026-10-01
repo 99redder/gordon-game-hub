@@ -188,16 +188,81 @@
       .hint{ text-align:center; font-weight:900; opacity:0.75; font-size: clamp(18px, 2.5vw, 24px); margin:0; font-family:"Fredoka", ui-rounded, system-ui; }
 
       .confetti{ display:none; }
+      /* A quiet paper canvas and a reachable, scrollable picture shelf. */
+      .gameShell{ padding:max(12px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); height:100dvh; }
+      .title{ font-size:clamp(24px,3vw,34px); color:#293d43; }
+      .workspace{ background:#ede8dc; border:0; box-shadow:none; backdrop-filter:none; grid-template-rows:auto minmax(0,1fr); }
+      .templatePicker{ background:transparent; border:0; padding:4px; overflow:hidden; }
+      .thumbGrid{ touch-action:pan-x; padding:4px; }
+      .thumbBtn{ border-color:#ddd7ca; border-radius:16px; }
+      .thumbBtn.selected{ outline:0; border-color:#7963b1; background:#ede6fa; }
+      .mainArea{ min-width:0; gap:10px; }
+      .controls{ gap:12px; }
+      .palette{ gap:8px; }
+      .colorBtn{ width:48px; height:48px; border-radius:50%; box-shadow:0 3px 0 #0002; }
+      .colorBtn.selected{ outline:3px solid #293d43; outline-offset:2px; }
+      .toolRow{ gap:8px; }
+      .toolBtn, #eraserBtn{ width:50px; height:50px; border-radius:15px; font-size:28px; }
+      .toolBtn[aria-pressed="true"]{ background:#dcd1f0; outline:3px solid #7963b1; outline-offset:1px; }
+      .sliderWrap{ gap:6px; font-size:14px; }
+      input[type="range"]{ width:100px; height:44px; accent-color:#7963b1; touch-action:pan-x; }
+      .canvasWrap{ background:white; border:2px solid #d9d2c3; border-radius:18px; }
+      canvas#c, canvas#outline{ position:absolute; inset:0; width:100%; height:100%; }
+      canvas#outline{ pointer-events:none; }
+      canvas#c, canvas#outline{ object-fit:contain; }
+      .hint{ font-size:13px; font-weight:600; color:#52665b; }
+      button:disabled{ opacity:.4; cursor:default; }
+      .snapshotBtn{ font-weight:850; font-size:17px; padding:12px 16px; background:#f7ca69; }
+      .snapshotFlash{ position:absolute; inset:0; background:white; opacity:0; pointer-events:none; z-index:3; }
+      .snapshotCamera{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:110px; padding:14px; border-radius:22px; background:#fffdf8ee; box-shadow:0 6px 20px #293d4333; opacity:0; pointer-events:none; text-align:center; z-index:4; }
+      .snapshotCamera svg{ width:100%; display:block; }
+      .snapshotCamera span{ display:block; color:#554582; font-size:22px; font-weight:900; margin-top:5px; }
+      .takingSnapshot .snapshotFlash{ animation:cameraFlash 220ms ease-out; }
+      .takingSnapshot .snapshotCamera{ animation:cameraClick 750ms ease-out; }
+      .snapshotPrint{ position:fixed; left:calc(50% - 130px); top:calc(50% - 115px); width:260px; padding:12px 12px 20px; background:#fffdf8; border-radius:6px; box-shadow:0 12px 45px #293d4355; pointer-events:none; z-index:30; text-align:center; }
+      .snapshotPrint canvas{ display:block; width:100%; height:auto; border:1px solid #eee; }
+      .snapshotPrint span{ display:block; margin-top:12px; font-size:19px; font-weight:850; color:#65538c; }
+      .snapshotArrived{ outline:4px solid #a9bf91; outline-offset:4px; }
+      @keyframes cameraFlash{ 0%{opacity:0} 15%{opacity:.65} 100%{opacity:0} }
+      @keyframes cameraClick{ 0%{opacity:0;transform:translate(-50%,-50%) scale(.8)} 15%,65%{opacity:1;transform:translate(-50%,-50%) scale(1)} 100%{opacity:0;transform:translate(-50%,-50%) scale(1)} }
+      @media(prefers-reduced-motion:reduce){
+        .takingSnapshot .snapshotFlash{ animation:none; }
+        .takingSnapshot .snapshotCamera{ animation:none; opacity:1; }
+      }
+      .snapshotToast{ position:fixed; left:50%; top:90px; transform:translateX(-50%); z-index:20; padding:16px 24px; border-radius:24px; background:#293d43; color:white; box-shadow:0 8px 28px #0002; font-weight:800; max-width:90vw; text-align:center; }
+      .snapshotToast[hidden]{ display:none; }
+      .hud .iconBtn{ width:52px; height:52px; border-radius:16px; }
+      .hubBtn{ font-size:16px; padding:12px 16px; }
+      @media(min-width:860px){
+        .workspace{ grid-template-columns:144px minmax(0,1fr); grid-template-rows:minmax(0,1fr); }
+        .thumbGrid{ touch-action:pan-y; }
+      }
+      @media(max-width:859px){
+        .templatePicker{ flex-direction:row; align-items:center; gap:8px; }
+        .pickerTitle{ display:none; }
+        .thumbGrid{ flex:1; }
+        .thumbBtn canvas{ width:76px; height:48px; }
+        .thumbLabel{ font-size:11px; }
+      }
+      @media(max-height:650px){
+        .gameShell{ gap:6px; padding:8px; }
+        .workspace{ padding:8px; gap:8px; }
+        .hint{ display:none; }
+        .colorBtn{ width:42px; height:42px; }
+        .controls{ gap:8px; }
+      }
     </style>
   </head>
-  <body>
+  <body class="coloringPage">
     <div class="clouds" aria-hidden="true"></div>
 
     <div class="gameShell">
       <div class="topRow">
         <h1 class="title">Coloring Time</h1>
         <div class="hud">
-          <a class="btn hubBtn" href="../../index.html">← Back to Hub</a>
+          <button class="btn snapshotBtn" id="snapshotBtn" type="button">📸 Snapshot</button>
+          <a class="btn secondary hubBtn" id="galleryLink" href="../../gallery/">🖼 My pictures</a>
+          <a class="btn hubBtn" href="../../index.html">← Playroom</a>
           <button class="btn secondary iconBtn" id="musicToggle" type="button" aria-label="Music" title="Music"></button>
         </div>
       </div>
@@ -230,27 +295,34 @@
               </button>
               <button class="btn secondary toolBtn" id="eraserBtn" type="button" aria-label="Eraser" title="Eraser">🧼</button>
               <div class="sliderWrap" aria-label="Brush size">
-                <span style="opacity:.75;">Size</span>
+                <label for="size">Size</label>
                 <input id="size" type="range" min="6" max="52" step="1" value="22" />
               </div>
-              <button class="btn" id="clearBtn" type="button" aria-label="Clear drawing" title="Clear">Clear</button>
+              <button class="btn secondary" id="undoBtn" type="button" aria-label="Undo last action" title="Undo">↶ Undo</button>
+              <button class="btn secondary" id="redoBtn" type="button" aria-label="Redo last action" title="Redo">↷ Redo</button>
+              <button class="btn secondary" id="clearBtn" type="button" aria-label="Clear drawing" title="Clear">Clear</button>
             </div>
           </div>
 
           <div class="canvasWrap" aria-label="Coloring canvas">
-            <canvas id="c"></canvas>
+            <canvas id="c" aria-label="Draw here with your finger or a pen"></canvas><canvas id="outline" aria-hidden="true"></canvas>
+            <div class="snapshotFlash" aria-hidden="true"></div>
+            <div class="snapshotCamera" aria-hidden="true"><svg viewBox="0 0 120 90"><path d="M12 23h23l9-14h31l9 14h24q8 0 8 8v47q0 8-8 8H12q-8 0-8-8V31q0-8 8-8" fill="#7666ad"/><circle cx="61" cy="52" r="25" fill="#fffdf8"/><circle cx="61" cy="52" r="18" fill="#293d43"/><circle cx="55" cy="46" r="6" fill="#a5d5db"/><rect x="88" y="29" width="16" height="10" rx="3" fill="#f7ca69"/></svg><span>Click!</span></div>
           </div>
 
-          <p class="hint">Pick a picture, then color it in!</p>
+          <p class="hint" id="saveStatus" role="status">Your pictures stay here when you come back.</p>
         </div>
       </div>
     </div>
 
-    <audio id="bgMusic" preload="auto">
+    <div id="snapshotToast" class="snapshotToast" role="status" hidden></div>
+    <audio id="bgMusic" preload="none">
       <source src="../../assets/music.mp3" type="audio/mpeg" />
     </audio>
 
     <script src="../../js/zoom-lock.js" defer></script>
+    <script src="../../js/snapshot-store.js" defer></script>
+    <script src="./snapshot-feedback.js" defer></script>
     <script src="./coloring.js" defer></script>
   </body>
 </html>

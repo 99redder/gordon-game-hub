@@ -10,38 +10,14 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
 
-    <!-- Fun, kid-friendly font (Google Fonts) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&display=swap" rel="stylesheet" />
-
     <!-- PWA hints -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
     <link rel="stylesheet" href="./css/styles.css" />
 
-    <!-- Prefetch games so first tap is fast even before SW finishes -->
-    <link rel="prefetch" href="./games/letter-pop/index.html" />
-    <link rel="prefetch" href="./games/letter-pop/letter-pop.js" />
-    <link rel="prefetch" href="./games/shape-safari/index.html" />
-    <link rel="prefetch" href="./games/shape-safari/shape-safari.js" />
-    <link rel="prefetch" href="./games/shape-words/index.html" />
-    <link rel="prefetch" href="./games/shape-words/shape-words.js" />
-    <link rel="prefetch" href="./games/number-count/index.html" />
-    <link rel="prefetch" href="./games/number-count/number-count.js" />
-    <link rel="prefetch" href="./games/coloring/index.html" />
-    <link rel="prefetch" href="./games/coloring/coloring.js" />
-    <link rel="prefetch" href="./games/dress-up/index.html" />
-    <link rel="prefetch" href="./games/dress-up/dress-up.js" />
-    <link rel="prefetch" href="./games/trace-trail/index.html" />
-    <link rel="prefetch" href="./games/trace-trail/trace-trail.js" />
-    <link rel="prefetch" href="./games/peekaboo-pairs/index.html" />
-    <link rel="prefetch" href="./games/peekaboo-pairs/peekaboo-pairs.js" />
-    <link rel="prefetch" href="./games/pet-parade/index.html" />
-    <link rel="prefetch" href="./games/pet-parade/pet-parade.js" />
   </head>
-  <body>
+  <body class="hubPage">
     <div class="clouds" aria-hidden="true"></div>
 
     <div class="transitionOverlay" id="transitionOverlay" aria-hidden="true">
@@ -54,52 +30,24 @@
     <div class="shell" id="appShell">
       <header class="topbar">
         <div class="brand" aria-label="Gordon Game Hub">
-          <div class="brandBadge" aria-hidden="true">
-            <svg width="56" height="56" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="badgeSky" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stop-color="#7dd3fc"/>
-                  <stop offset="1" stop-color="#fbcfe8"/>
-                </linearGradient>
-              </defs>
-              <rect x="4" y="4" width="56" height="56" rx="18" fill="url(#badgeSky)"/>
-              <path d="M32 8 L39 24 L56 24 L42 35 L47 52 L32 42 L17 52 L22 35 L8 24 L25 24 Z" fill="#fbbf24" stroke="#f97316" stroke-width="2" stroke-linejoin="round"/>
-              <circle cx="26" cy="30" r="3" fill="#0f172a"/>
-              <circle cx="38" cy="30" r="3" fill="#0f172a"/>
-              <path d="M24 36 C28 42 36 42 40 36" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="brandTitle">
-            <span class="logoText" aria-label="Gordon Game Hub">
-              <span class="logoLetter" aria-hidden="true">G</span>
-              <span class="logoLetter" aria-hidden="true">o</span>
-              <span class="logoLetter" aria-hidden="true">r</span>
-              <span class="logoLetter" aria-hidden="true">d</span>
-              <span class="logoLetter" aria-hidden="true">o</span>
-              <span class="logoLetter" aria-hidden="true">n</span>
-              <span class="logoLetter logoSpace" aria-hidden="true">&nbsp;</span>
-              <span class="logoLetter" aria-hidden="true">G</span>
-              <span class="logoLetter" aria-hidden="true">a</span>
-              <span class="logoLetter" aria-hidden="true">m</span>
-              <span class="logoLetter" aria-hidden="true">e</span>
-              <span class="logoLetter logoSpace" aria-hidden="true">&nbsp;</span>
-              <span class="logoLetter" aria-hidden="true">H</span>
-              <span class="logoLetter" aria-hidden="true">u</span>
-              <span class="logoLetter" aria-hidden="true">b</span>
-            </span>
-            <span class="logoSub">tap a game • have fun</span>
-          </div>
+          <div class="brandBadge" aria-hidden="true">✦</div>
+          <div class="brandTitle"><span class="hubName">Gordon’s playroom</span><span class="logoSub">A little world of big ideas</span></div>
         </div>
 
         <div class="musicControls">
+          <a class="btn secondary hubBtn" href="./gallery/">🖼 My pictures</a>
           <button id="musicToggle" class="btn secondary iconBtn" type="button" aria-label="Music" title="Music"></button>
         </div>
       </header>
 
       <main class="main">
         <section class="panel" aria-label="Games">
-          <h1 class="h1">Games</h1>
+          <div class="gamesHeading"><h1 class="h1">What shall we play?</h1><span>Explore • create • discover</span></div>
           <div class="grid" role="list">
+            <a class="gameIconLink gameLink favoriteGame" role="listitem" href="./games/coloring/" data-url="./games/coloring/" aria-label="Coloring Time" data-label="Coloring Time">
+              <span class="artPreview" aria-hidden="true"><svg viewBox="0 0 260 140"><rect x="8" y="8" width="244" height="124" rx="18" fill="#fffdf7"/><circle cx="197" cy="41" r="19" fill="#ffc857"/><path d="M20 117Q77 33 136 117M110 117Q170 51 240 117" fill="#a6d9bd"/><path d="M67 88Q44 42 76 53L93 35L107 57Q147 53 127 91" fill="#edaa85" stroke="#684a46" stroke-width="4" stroke-linejoin="round"/><circle cx="87" cy="71" r="3" fill="#684a46"/><circle cx="111" cy="71" r="3" fill="#684a46"/><path d="M93 82q7 9 14 0" fill="none" stroke="#684a46" stroke-width="3" stroke-linecap="round"/><path d="m167 105 25-55 10 5-25 55-13 8z" fill="#8d7fcb" stroke="#65599c" stroke-width="3"/></svg></span>
+              <span class="gameLabel">Coloring Time</span><span class="gameSubtitle">Make something wonderful</span>
+            </a>
             <a class="gameIconLink gameLink" role="listitem" href="https://99redder.github.io/bucketgame/" data-url="https://99redder.github.io/bucketgame/" aria-label="Animal Bucket" data-label="Animal Bucket">
               <span class="gameEmoji" aria-hidden="true">🪣</span>
               <span class="gameLabel">Animal Bucket</span>
@@ -120,10 +68,7 @@
               <span class="gameEmoji" aria-hidden="true">🔢</span>
               <span class="gameLabel">Count & Tap</span>
             </a>
-            <a class="gameIconLink gameLink" role="listitem" href="./games/coloring/" data-url="./games/coloring/" aria-label="Coloring Time" data-label="Coloring Time">
-              <span class="gameEmoji" aria-hidden="true">🎨</span>
-              <span class="gameLabel">Coloring Time</span>
-            </a>
+
             <a class="gameIconLink gameLink" role="listitem" href="./games/dress-up/" data-url="./games/dress-up/" aria-label="Dress Up" data-label="Dress Up">
               <span class="gameEmoji" aria-hidden="true">🧢</span>
               <span class="gameLabel">Dress Up</span>
@@ -143,7 +88,7 @@
           </div>
         </section>
 
-        <section class="panel gordonPanel" aria-label="Gordon">
+        <section class="panel gordonPanel" aria-label="Talk to Gordon">
           <div class="gordonWrap" id="gordon">
             <div class="messageDisplay" id="messageDisplay" aria-label="Messages for Gordon" aria-live="polite">
               <div class="messageDisplayCard" id="messageCard">
@@ -152,12 +97,12 @@
               </div>
             </div>
 
-            <div class="speech" id="bubble">Tap Gordon to say hello!</div>
-            <div class="hint">(On iPad: tap Gordon. On desktop: hover or tap.)</div>
+            <div class="speech" id="bubble" aria-live="polite">Hello, my friend! Let’s play.</div>
+            <div class="hint">Tap me for a little surprise</div>
 
-            <button id="gordonBtn" class="gordonBtn" type="button" aria-label="Gordon">
+            <button id="gordonBtn" class="gordonBtn" type="button" aria-label="Talk to Gordon">
               <!-- Gordon: simple original SVG (no external licensing) -->
-              <svg class="gordonSvg" viewBox="0 0 520 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gordon">
+              <svg class="gordonSvg" viewBox="0 0 520 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Talk to Gordon">
                 <defs>
                   <linearGradient id="shirt" x1="0" x2="0" y1="0" y2="1">
                     <stop offset="0" stop-color="#60a5fa"/>
@@ -213,17 +158,10 @@
     </div>
 
     <!-- Background music (you must provide a royalty-free file) -->
-    <audio id="bgMusic" preload="auto">
+    <audio id="bgMusic" preload="none">
       <source src="./assets/music.mp3" type="audio/mpeg" />
     </audio>
 
-    <!-- Firebase SDK (compat builds for vanilla JS) -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-    <script src="./js/firebase-config.local.js"></script>
-    <script src="./js/firebase-config.js"></script>
-    <script src="./js/app-check.js"></script>
     <script src="./js/zoom-lock.js" defer></script>
     <script src="./js/app.js" defer></script>
   </body>

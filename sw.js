@@ -1,5 +1,5 @@
 /* Gordon Game Hub service worker (basic offline cache) */
-const CACHE_NAME = 'gordon-game-hub-v22';
+const CACHE_NAME = 'gordon-game-hub-v25';
 const ASSETS = [
   './',
   './index.html',
@@ -8,6 +8,11 @@ const ASSETS = [
   './messages-manifest.webmanifest',
   './css/styles.css',
   './js/app.js',
+  './js/snapshot-store.js',
+  './gallery/',
+  './gallery/index.html',
+  './gallery/gallery.js',
+  './gallery/gallery.css',
   './js/messages.js',
   './js/zoom-lock.js',
   './js/firebase-config.js',
@@ -32,6 +37,7 @@ const ASSETS = [
   './games/coloring/',
   './games/coloring/index.html',
   './games/coloring/coloring.js',
+  './games/coloring/snapshot-feedback.js',
   './games/dress-up/',
   './games/dress-up/index.html',
   './games/dress-up/dress-up.js',
@@ -50,22 +56,15 @@ self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
     await cache.addAll(ASSETS);
-    self.skipWaiting();
+    // Activate when existing app windows close, preserving games in progress.
   })());
-});
-
-// Allow the page to tell a waiting SW to activate immediately.
-self.addEventListener('message', (event) => {
-  if (event?.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.map((k) => (k === CACHE_NAME ? null : caches.delete(k))));
-    self.clients.claim();
+    await Promise.all(keys.filter(k => k.startsWith('gordon-game-hub-') && k !== CACHE_NAME).map(k => caches.delete(k)));
+    await self.clients.claim();
   })());
 });
 
@@ -74,32 +73,25 @@ self.addEventListener('fetch', (event) => {
   // Only handle GET
   if (req.method !== 'GET') return;
 
-  // Don't cache Firebase API calls
-  const reqUrl = new URL(req.url);
-  if (reqUrl.hostname.includes('firebaseio.com') ||
-      reqUrl.hostname.includes('googleapis.com')) {
-    return;
-  }
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;
 
   event.respondWith((async () => {
-    const cached = await caches.match(req);
+    const cache = await caches.open(CACHE_NAME);
+    // Installed launch URLs include ?source=pwa; the same offline page serves them.
+    const cached = await cache.match(req, { ignoreSearch: req.mode === 'navigate' });
     if (cached) return cached;
-
     try {
       const fresh = await fetch(req);
-      // cache same-origin navigations/assets
-      const url = new URL(req.url);
-      if (url.origin === self.location.origin) {
-        const cache = await caches.open(CACHE_NAME);
-        cache.put(req, fresh.clone());
-      }
+      if (fresh.ok && fresh.type === 'basic') await cache.put(req, fresh.clone());
       return fresh;
-    } catch (e) {
-      // fallback to app shell
+    } catch (error) {
       if (req.mode === 'navigate') {
-        return caches.match('./index.html');
+        return new Response('This page is not available offline yet. Open the playroom while online first.', {
+          status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+        });
       }
-      throw e;
+      throw error;
     }
   })());
 });

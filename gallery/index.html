@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f8f5ee">
+  <title>My pictures • Gordon Game Hub</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="./gallery.css">
+</head>
+<body class="galleryPage">
+  <main class="galleryShell">
+    <header class="galleryHeader">
+      <div><div class="eyebrow">GORDON’S LITTLE ART STUDIO</div><h1>My pictures</h1><p id="galleryStatus" role="status">Opening your picture collection…</p></div>
+      <nav aria-label="Go to"><a class="btn hubBtn" href="../games/coloring/">🎨 Let’s color</a><a class="btn secondary hubBtn" href="../index.html">← Playroom</a></nav>
+    </header>
+    <section id="pictureGrid" class="pictureGrid" aria-label="Saved pictures"></section>
+    <div id="emptyGallery" class="emptyGallery" hidden><span aria-hidden="true">🖼️</span><h2>A home for your masterpieces</h2><p>Make a picture, then tap 📸 Snapshot.<br>Every picture you take will appear here.</p><a class="btn hubBtn" href="../games/coloring/">Let’s make a picture</a></div>
+    <footer>
+      <details id="backupSettings"><summary>Grown-ups: cloud backup</summary>
+        <p>Connect once to keep snapshots in your private family gallery. Use the same address and family key on another device to see the same pictures.</p>
+        <form id="backupForm">
+          <label>Backup address<input id="backupUrl" type="url" inputmode="url" placeholder="https://your-gallery.workers.dev" required autocomplete="off"></label>
+          <label>Family key<input id="backupKey" type="password" required autocomplete="off" autocapitalize="none" spellcheck="false"></label>
+          <button class="btn" id="connectBtn" type="submit">Connect backup</button>
+        </form>
+        <p id="backupStatus" role="status"></p><button class="btn secondary" id="syncBtn" type="button" hidden>Try backup again</button>
+      </details>
+    </footer>
+  </main>
+  <dialog id="pictureViewer" aria-labelledby="viewerTitle">
+    <div class="viewerHeader"><h2 id="viewerTitle">My picture</h2><button class="btn secondary" id="closeViewer" type="button">✕ Close</button></div>
+    <img id="fullPicture" alt="">
+    <div class="viewerFooter"><span id="viewerDate"></span><a class="btn hubBtn" id="downloadPicture" download="my-picture.png">↓ Save image</a></div>
+  </dialog>
+  <script src="../js/snapshot-store.js" defer></script>
+  <script src="./gallery.js" defer></script>
+</body>
+</html>

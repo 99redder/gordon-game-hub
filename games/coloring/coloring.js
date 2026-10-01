@@ -1,5 +1,5 @@
 /* Coloring Time — simple toddler-friendly drawing canvas
-   - 10 selectable coloring templates (animals + vehicles)
+   - Pictures and a blank page, with per-picture local saves and undo/redo
    - Color palette
    - Pen vs Brush
    - Eraser
@@ -28,19 +28,19 @@ function drawSunnyDay(ctx, w, h) {
     ctx.stroke();
   }
 
-  // Clouds
-  function cloud(x, y, s) {
+  // Single cloud silhouettes scale consistently on thumbnails and paper.
+  function cloud(x, y, size) {
     ctx.beginPath();
-    ctx.arc(x, y, 26*s, 0, Math.PI*2);
-    ctx.arc(x+28*s, y-12*s, 32*s, 0, Math.PI*2);
-    ctx.arc(x+62*s, y, 26*s, 0, Math.PI*2);
-    ctx.arc(x+36*s, y+14*s, 30*s, 0, Math.PI*2);
+    ctx.moveTo(x, y);
+    ctx.bezierCurveTo(x-size*.4, y, x-size*.4, y-size*.55, x, y-size*.55);
+    ctx.bezierCurveTo(x, y-size*1.15, x+size*.9, y-size*1.15, x+size, y-size*.55);
+    ctx.bezierCurveTo(x+size*1.6, y-size*.7, x+size*1.7, y, x+size*1.2, y);
     ctx.closePath();
     ctx.stroke();
   }
-  cloud(w*0.10, h*0.18, 1.0);
-  cloud(w*0.18, h*0.38, 1.15);
-  cloud(w*0.08, h*0.62, 1.25);
+  cloud(w*.12, h*.23, Math.min(w,h)*.13);
+  cloud(w*.20, h*.41, Math.min(w,h)*.10);
+  cloud(w*.08, h*.65, Math.min(w,h)*.12);
 
   // Smiley face
   const r = Math.min(w,h) * 0.22;
@@ -630,6 +630,8 @@ function drawTrain(ctx, w, h) {
 /* ---- Template registry ---- */
 
 const TEMPLATES = [
+  { id: 'blank', label: 'My own picture', draw: () => {} },
+  { id: 'train', label: 'Train', draw: drawTrain },
   { id: 'sunny',     label: 'Sunny Day',  draw: drawSunnyDay },
   { id: 'cat',       label: 'Cat',        draw: drawCat },
   { id: 'fish',      label: 'Fish',       draw: drawFish },
@@ -651,7 +653,7 @@ const state = {
   drawing: false,
   last: null,
   musicEnabled: true,
-  currentTemplate: 0,
+  currentTemplate: 2,
 };
 
 /* ---- Music ---- */
@@ -697,7 +699,7 @@ function setupMusic() {
       state.musicEnabled = false;
       localStorage.setItem('ggh_music', 'off');
       render();
-      alert('Tap Music to start (iPad autoplay rules).');
+
     }
   }
 
@@ -709,7 +711,8 @@ function setupMusic() {
     render();
   }
 
-  window.addEventListener('pointerdown', () => {
+  window.addEventListener('pointerdown', (event) => {
+    if (event.target.closest('#musicToggle')) return;
     if (state.musicEnabled) start();
   }, { once: true });
 
@@ -718,6 +721,10 @@ function setupMusic() {
     else start();
   });
 
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) audio.pause();
+    else if (state.musicEnabled) audio.play().catch(() => {});
+  });
   render();
 }
 
@@ -727,7 +734,8 @@ function setupPalette() {
   const btns = Array.from(document.querySelectorAll('.colorBtn'));
 
   function select(btn) {
-    btns.forEach((b) => b.classList.remove('selected'));
+    btns.forEach((b) => { b.classList.remove('selected'); b.setAttribute('aria-pressed', 'false'); });
+    btn.setAttribute('aria-pressed', 'true');
     btn.classList.add('selected');
     state.color = btn.getAttribute('data-color') || '#ef4444';
   }
@@ -744,18 +752,9 @@ function setupPalette() {
 /* ---- Tools ---- */
 
 function syncToolButtons() {
-  const pen = $('#penBtn');
-  const brush = $('#brushBtn');
-  const eraser = $('#eraserBtn');
-
-  const activeStyle = 'outline: 6px solid rgba(14,165,233,0.35);';
-  pen.style = '';
-  brush.style = '';
-  eraser.style = '';
-
-  if (state.tool === 'pen') pen.style = activeStyle;
-  if (state.tool === 'brush') brush.style = activeStyle;
-  if (state.tool === 'eraser') eraser.style = activeStyle;
+  for (const tool of ['pen', 'brush', 'eraser']) {
+    $(`#${tool}Btn`).setAttribute('aria-pressed', String(state.tool === tool));
+  }
 }
 
 function setupTools() {
@@ -778,156 +777,221 @@ function setupTools() {
   });
 
   $('#clearBtn').addEventListener('click', () => {
-    clearCanvas();
+    finishStroke();
+    remember();
+    sheet().strokes = [];
+    renderDrawing();
+    saveDrawings();
   });
+  $('#undoBtn').addEventListener('click', undo);
+  $('#redoBtn').addEventListener('click', redo);
 
   syncToolButtons();
 }
 
-/* ---- Canvas ---- */
+/* ---- Persistent drawing model: strokes are normalized to the paper size. ---- */
+const STORAGE_KEY = 'ggh_coloring_v2';
+const pictures = {};
+let activePointer = null;
+let currentStroke = null;
+let frame = 0;
+let storageAvailable = true;
 
-function resizeCanvas() {
-  const canvas = $('#c');
-  const wrap = canvas.parentElement;
-  const rect = wrap.getBoundingClientRect();
-
-  const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
-  const w = Math.max(320, Math.floor(rect.width));
-  const h = Math.max(320, Math.floor(rect.height));
-
-  const old = document.createElement('canvas');
-  old.width = canvas.width;
-  old.height = canvas.height;
-  old.getContext('2d').drawImage(canvas, 0, 0);
-
-  canvas.width = w * dpr;
-  canvas.height = h * dpr;
-  canvas.style.width = w + 'px';
-  canvas.style.height = h + 'px';
-
-  const ctx = canvas.getContext('2d');
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, w, h);
-
-  if (old.width && old.height) {
-    ctx.drawImage(old, 0, 0, old.width / dpr, old.height / dpr, 0, 0, w, h);
-  }
-
-  drawTemplate();
+function sheet() {
+  const id = TEMPLATES[state.currentTemplate].id;
+  return pictures[id] ||= { strokes: [], undo: [], redo: [] };
 }
 
-function clearCanvas() {
-  const canvas = $('#c');
-  const ctx = canvas.getContext('2d');
-  const w = canvas.clientWidth;
-  const h = canvas.clientHeight;
-  ctx.clearRect(0, 0, w, h);
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, w, h);
+function remember() {
+  const page = sheet();
+  page.undo.push(page.strokes.slice());
+  if (page.undo.length > 40) page.undo.shift();
+  page.redo = [];
+  syncHistory();
+}
+
+function syncHistory() {
+  $('#undoBtn').disabled = !sheet().undo.length;
+  $('#redoBtn').disabled = !sheet().redo.length;
+}
+
+function undo() {
+  finishStroke();
+  const page = sheet();
+  if (!page.undo.length) return;
+  page.redo.push(page.strokes);
+  page.strokes = page.undo.pop();
+  renderDrawing();
+  saveDrawings();
+}
+
+function redo() {
+  finishStroke();
+  const page = sheet();
+  if (!page.redo.length) return;
+  page.undo.push(page.strokes);
+  page.strokes = page.redo.pop();
+  renderDrawing();
+  saveDrawings();
+}
+
+function saveDrawings() {
+  try {
+    const saved = {};
+    for (const [id, page] of Object.entries(pictures)) saved[id] = page.strokes;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ active: TEMPLATES[state.currentTemplate].id, pictures: saved }));
+    storageAvailable = true;
+  } catch {
+    storageAvailable = false;
+  }
+  $('#saveStatus').textContent = storageAvailable ? 'Saved on this device • Keep creating!' : 'Keep this page open to keep your picture. Device storage is full or unavailable.';
+  syncHistory();
+}
+
+function restoreDrawings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    if (!saved || !saved.pictures) return;
+    for (const tpl of TEMPLATES) {
+      const strokes = saved.pictures[tpl.id];
+      if (!Array.isArray(strokes)) continue;
+      const valid = strokes.filter(stroke => stroke && ['pen', 'brush', 'eraser'].includes(stroke.tool)
+        && /^#[0-9a-f]{6}$/i.test(stroke.color) && Number.isFinite(stroke.size) && stroke.size > 0
+        && Array.isArray(stroke.points) && stroke.points.length && stroke.points.every(pt =>
+          Array.isArray(pt) && pt.length === 2 && pt.every(n => Number.isFinite(n) && n >= 0 && n <= 1)));
+      pictures[tpl.id] = { strokes: valid, undo: [], redo: [] };
+    }
+    const index = TEMPLATES.findIndex(tpl => tpl.id === saved.active);
+    if (index >= 0) state.currentTemplate = index;
+  } catch { /* A missing or malformed save never prevents play. */ }
+}
+
+function canvasSize() {
+  // Fixed paper proportions keep coloring aligned with outlines after rotation.
+  return { w: 1000, h: 750 };
+}
+
+function resizeCanvas() {
+  finishStroke();
+  const { w, h } = canvasSize();
+  if (!w || !h) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  for (const id of ['c', 'outline']) {
+    const canvas = $(`#${id}`);
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    canvas.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  renderDrawing();
   drawTemplate();
 }
 
 function drawTemplate() {
-  const canvas = $('#c');
+  const canvas = $('#outline');
   const ctx = canvas.getContext('2d');
-  const w = canvas.clientWidth;
-  const h = canvas.clientHeight;
-
+  const { w, h } = canvasSize();
+  ctx.clearRect(0, 0, w, h);
   ctx.save();
-  ctx.lineWidth = 8;
-  ctx.strokeStyle = 'rgba(15,23,42,0.55)';
+  ctx.lineWidth = Math.max(3, Math.min(w, h) * .009);
+  ctx.strokeStyle = '#485151';
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
-
-  const tpl = TEMPLATES[state.currentTemplate];
-  if (tpl && tpl.draw) {
-    tpl.draw(ctx, w, h);
-  }
-
+  TEMPLATES[state.currentTemplate].draw(ctx, w, h);
   ctx.restore();
 }
 
-function getPoint(e) {
-  const canvas = $('#c');
-  const rect = canvas.getBoundingClientRect();
-  const pt = (e.touches && e.touches[0]) ? e.touches[0] : e;
-  return {
-    x: pt.clientX - rect.left,
-    y: pt.clientY - rect.top,
-  };
+function paintStroke(stroke, fromIndex = 0) {
+  const ctx = $('#c').getContext('2d');
+  const { w, h } = canvasSize();
+  ctx.save();
+  ctx.globalCompositeOperation = stroke.tool === 'eraser' ? 'destination-out' : 'source-over';
+  ctx.strokeStyle = stroke.color;
+  ctx.fillStyle = stroke.color;
+  ctx.lineWidth = stroke.size * Math.min(w, h);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  const first = stroke.points[fromIndex];
+  if (stroke.points.length === 1) {
+    ctx.beginPath();
+    ctx.arc(first[0] * w, first[1] * h, ctx.lineWidth / 2, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    ctx.beginPath();
+    ctx.moveTo(first[0] * w, first[1] * h);
+    for (let i = fromIndex + 1; i < stroke.points.length; i++) {
+      ctx.lineTo(stroke.points[i][0] * w, stroke.points[i][1] * h);
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
 }
 
-function drawLine(from, to) {
+function renderDrawing() {
+  const { w, h } = canvasSize();
+  $('#c').getContext('2d').clearRect(0, 0, w, h);
+  for (const stroke of sheet().strokes) paintStroke(stroke);
+  syncHistory();
+}
+
+function getPoint(event) {
+  const rect = $('#c').getBoundingClientRect();
+  const scale = Math.min(rect.width / 1000, rect.height / 750);
+  const left = rect.left + (rect.width - 1000 * scale) / 2;
+  const top = rect.top + (rect.height - 750 * scale) / 2;
+  return [Math.max(0, Math.min(1, (event.clientX - left) / (1000 * scale))),
+          Math.max(0, Math.min(1, (event.clientY - top) / (750 * scale)))];
+}
+
+function finishStroke() {
+  if (activePointer === null) return;
+  const id = activePointer;
+  activePointer = null;
+  currentStroke = null;
   const canvas = $('#c');
-  const ctx = canvas.getContext('2d');
-  const size = state.size;
-
-  if (state.tool === 'eraser') {
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = size * 1.1;
-  } else if (state.tool === 'pen') {
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.strokeStyle = state.color;
-    ctx.lineWidth = size * 0.75;
-  } else {
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.strokeStyle = state.color;
-    ctx.lineWidth = size;
-  }
-
-  ctx.beginPath();
-  ctx.moveTo(from.x, from.y);
-  ctx.lineTo(to.x, to.y);
-  ctx.stroke();
-
-  if (state.tool === 'brush') {
-    ctx.fillStyle = state.color;
-    ctx.globalAlpha = 0.18;
-    ctx.beginPath();
-    ctx.arc(to.x, to.y, size * 0.55, 0, Math.PI*2);
-    ctx.fill();
-    ctx.globalAlpha = 1;
-  }
+  if (canvas.hasPointerCapture(id)) canvas.releasePointerCapture(id);
+  saveDrawings();
 }
 
 function setupCanvas() {
   const canvas = $('#c');
-
-  function down(e) {
-    e.preventDefault();
-    state.drawing = true;
-    state.last = getPoint(e);
+  canvas.addEventListener('pointerdown', event => {
+    if (activePointer !== null || !event.isPrimary || event.button !== 0) return;
+    event.preventDefault();
+    activePointer = event.pointerId;
+    canvas.setPointerCapture(activePointer);
+    remember();
+    currentStroke = { tool: state.tool, color: state.color,
+      size: state.size * (state.tool === 'pen' ? .5 : 1) / Math.min(canvas.clientWidth, canvas.clientHeight), points: [getPoint(event)] };
+    sheet().strokes.push(currentStroke);
+    paintStroke(currentStroke);
+  });
+  canvas.addEventListener('pointermove', event => {
+    if (event.pointerId !== activePointer || !currentStroke) return;
+    event.preventDefault();
+    const start = currentStroke.points.length - 1;
+    const samples = event.getCoalescedEvents?.() || [event];
+    for (const sample of samples.length ? samples : [event]) {
+      const point = getPoint(sample);
+      const last = currentStroke.points.at(-1);
+      if (Math.hypot(point[0] - last[0], point[1] - last[1]) > .001) currentStroke.points.push(point);
+    }
+    if (currentStroke.points.length > start + 1) paintStroke(currentStroke, start);
+  });
+  for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+    canvas.addEventListener(type, event => { if (event.pointerId === activePointer) finishStroke(); });
   }
-
-  function move(e) {
-    if (!state.drawing) return;
-    e.preventDefault();
-    const pt = getPoint(e);
-    if (state.last) drawLine(state.last, pt);
-    state.last = pt;
-  }
-
-  function up(e) {
-    if (!state.drawing) return;
-    e.preventDefault();
-    state.drawing = false;
-    state.last = null;
-  }
-
-  canvas.addEventListener('pointerdown', down);
-  canvas.addEventListener('pointermove', move);
-  canvas.addEventListener('pointerup', up);
-  canvas.addEventListener('pointercancel', up);
-  canvas.addEventListener('pointerleave', up);
-
-  window.addEventListener('resize', () => resizeCanvas());
-  window.addEventListener('orientationchange', () => resizeCanvas());
-
+  new ResizeObserver(() => {
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(resizeCanvas);
+  }).observe(canvas.parentElement);
+  window.addEventListener('pagehide', () => { finishStroke(); saveDrawings(); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) { finishStroke(); saveDrawings(); } });
+  window.addEventListener('keydown', event => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'z') {
+      event.preventDefault();
+      if (event.shiftKey) redo(); else undo();
+    }
+  });
   resizeCanvas();
 }
 
@@ -951,13 +1015,17 @@ function renderThumbnail(canvas, tpl) {
 }
 
 function selectTemplate(index) {
+  finishStroke();
   state.currentTemplate = index;
 
   document.querySelectorAll('.thumbBtn').forEach((btn, i) => {
     btn.classList.toggle('selected', i === index);
+    btn.setAttribute('aria-pressed', String(i === index));
   });
 
-  clearCanvas();
+  renderDrawing();
+  drawTemplate();
+  saveDrawings();
 }
 
 function setupTemplatePicker() {
@@ -965,13 +1033,14 @@ function setupTemplatePicker() {
 
   TEMPLATES.forEach((tpl, index) => {
     const btn = document.createElement('button');
-    btn.className = 'thumbBtn' + (index === 0 ? ' selected' : '');
+    btn.className = 'thumbBtn' + (index === state.currentTemplate ? ' selected' : '');
     btn.setAttribute('aria-label', tpl.label);
+    btn.setAttribute('aria-pressed', String(index === state.currentTemplate));
     btn.setAttribute('data-index', index);
 
     const miniCanvas = document.createElement('canvas');
     miniCanvas.width = 240;
-    miniCanvas.height = 160;
+    miniCanvas.height = 180;
     miniCanvas.setAttribute('aria-hidden', 'true');
     btn.appendChild(miniCanvas);
 
@@ -987,14 +1056,51 @@ function setupTemplatePicker() {
   });
 }
 
+/* A snapshot is an independent keepsake; later drawing never changes it. */
+function setupSnapshots() {
+  const button = $('#snapshotBtn');
+  const toast = $('#snapshotToast');
+  let toastTimer;
+  button.addEventListener('click', async () => {
+    if (button.disabled) return;
+    finishStroke();
+    button.disabled = true;
+    button.textContent = '📸 Click!';
+    SnapshotFeedback.capture();
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1000; canvas.height = 750;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 1000, 750);
+      ctx.drawImage($('#c'), 0, 0, 1000, 750);
+      ctx.drawImage($('#outline'), 0, 0, 1000, 750);
+      const blob = await new Promise((resolve, reject) => canvas.toBlob(value => value ? resolve(value) : reject(new Error('Could not create picture.')), 'image/png'));
+      await GordonGallery.save(blob, TEMPLATES[state.currentTemplate].label);
+      toast.textContent = '📸 Click! Your picture is in My pictures.';
+      await SnapshotFeedback.saved(canvas);
+    } catch {
+      toast.textContent = 'Your picture could not be saved. Please ask a grown-up to check device storage.';
+    } finally {
+      button.disabled = false;
+      button.textContent = '📸 Snapshot';
+      toast.hidden = false;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { toast.hidden = true; }, 4500);
+    }
+  });
+  GordonGallery.sync().catch(() => {});
+}
+
 /* ---- Init ---- */
 
 function init() {
+  restoreDrawings();
   setupMusic();
   setupPalette();
   setupTools();
   setupTemplatePicker();
   setupCanvas();
+  setupSnapshots();
 }
 
 init();

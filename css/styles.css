@@ -452,3 +452,76 @@ body{
   .gordonPanel{ grid-column: auto; grid-row: auto; align-self: stretch; }
   .gordonSvg{ width: min(320px, 92%); }
 }
+
+/* Playroom: lightweight surfaces, large touch targets, familiar Gordon. */
+:root { --sky1:#f8f5ee; --sky2:#edf5ef; --ink:#293d43; }
+button, a, input { -webkit-tap-highlight-color:transparent; }
+button { cursor:pointer; font:inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline:4px solid #6553ab; outline-offset:4px; }
+.btn { background:#f7ca69; box-shadow:0 4px 0 #dca94c; min-height:48px; }
+.btn.secondary { background:#fffdf8; box-shadow:0 4px 0 #ddd9d0; }
+.btn.iconBtn { background:#7666ad; box-shadow:0 4px 0 #554582; }
+.clouds { opacity:.25; }
+.clouds::before, .clouds::after { animation:none; }
+.hubPage { background:#f8f5ee; }
+.hubPage .clouds { display:none; }
+.hubPage .shell { max-width:1440px; margin:auto; padding:28px max(24px, env(safe-area-inset-right)) 32px max(24px, env(safe-area-inset-left)); gap:28px; }
+.hubPage .brandBadge { width:56px; height:56px; flex:none; border:0; background:#f8cc6b; color:#88652b; box-shadow:none; border-radius:20px; font-size:40px; transform:rotate(-8deg); }
+.hubName { font-size:clamp(24px,3vw,36px); font-weight:850; letter-spacing:-1.2px; }
+.hubPage .logoSub { font-size:14px; color:#627773; margin-top:6px; font-weight:600; }
+.hubPage .iconBtn { width:56px; height:56px; border-radius:18px; }
+.hubPage .main { grid-template-columns:minmax(260px,.8fr) minmax(0,1.65fr); grid-template-rows:auto; gap:28px; align-items:start; }
+.hubPage .panel { border:0; backdrop-filter:none; box-shadow:none; padding:0; }
+.hubPage .panel[aria-label="Games"] { grid-column:2; grid-row:1; }
+.hubPage .gordonPanel { grid-column:1; grid-row:1; align-self:start; background:#dfebe3; border-radius:36px; padding:28px 18px 0; position:sticky; top:24px; overflow:hidden; }
+.hubPage .gordonWrap { gap:12px; }
+.hubPage .speech { background:#fffdf8; padding:18px; border:0; border-radius:24px 24px 24px 5px; font-size:clamp(19px,2.3vw,25px); line-height:1.3; min-height:90px; display:grid; place-items:center; width:100%; }
+.hubPage .hint { color:#526c61; font-size:14px; opacity:1; }
+.hubPage .gordonBtn { width:100%; min-height:200px; touch-action:manipulation; }
+.hubPage .gordonSvg { width:min(100%,360px); display:block; margin:auto; filter:none; }
+.hubPage .gordonBtn:active { transform:scale(.97); }
+.hubPage .messageDisplay { order:4; min-height:0; margin-bottom:16px; }
+.hubPage .messageDisplay[hidden] { display:none; }
+.hubPage .messageDisplayCard { padding:12px; box-shadow:none; border:0; }
+.hubPage .messageDisplayText { font-size:20px; }
+.gamesHeading { display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin:4px 0 18px; }
+.gamesHeading .h1 { font-size:clamp(22px,2.6vw,30px); letter-spacing:-.6px; margin:0; }
+.gamesHeading > span { color:#657c73; font-size:12px; }
+.hubPage .grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.hubPage .gameIconLink { background:#fffefa; border:2px solid #eee9df; border-radius:26px; min-height:150px; padding:16px 10px; gap:12px; box-shadow:0 5px 0 #e8e3d9; transition:transform 120ms ease; }
+.hubPage .gameIconLink:hover { transform:none; }
+.hubPage .gameIconLink:active { transform:translateY(4px); box-shadow:0 1px 0 #e8e3d9; }
+.hubPage .gameEmoji { font-size:56px; filter:none; }
+.hubPage .gameLabel { font-size:17px; text-align:center; text-shadow:none; color:#293d43; }
+.hubPage .favoriteGame { grid-column:span 2; background:#ece6f6; border-color:#e2d9ef; display:grid; grid-template-columns:1.1fr 1fr; grid-template-rows:1fr 1fr; gap:0 16px; padding:16px; }
+.artPreview { grid-row:span 2; transform:rotate(-4deg); }
+.artPreview svg { width:100%; display:block; }
+.hubPage .favoriteGame .gameLabel { align-self:end; text-align:left; font-size:25px; }
+.gameSubtitle { align-self:start; font-size:13px; line-height:1.5; margin-top:6px; color:#645582; }
+@media (max-width:900px) {
+  .hubPage .main { grid-template-columns:1fr; gap:24px; }
+  .hubPage .gordonPanel { grid-column:1; grid-row:1; position:static; padding:16px 24px 0; }
+  .hubPage .panel[aria-label="Games"] { grid-column:1; grid-row:2; }
+  .hubPage .gordonWrap { display:grid; grid-template-columns:1fr 220px; grid-template-rows:1fr auto; column-gap:24px; }
+  .hubPage .gordonBtn { grid-column:2; grid-row:1 / span 2; min-height:0; }
+  .hubPage .gordonSvg { width:210px; }
+  .hubPage .speech { align-self:end; max-width:none; }
+  .hubPage .hint { align-self:start; text-align:center; padding-bottom:16px; }
+  .hubPage .messageDisplay { grid-column:1 / -1; }
+}
+@media (max-width:540px) {
+  .hubPage .shell { padding:18px 14px; gap:20px; }
+  .hubPage .brandBadge { display:none; }
+  .hubPage .gordonWrap { grid-template-columns:1fr 130px; column-gap:4px; }
+  .hubPage .gordonPanel { padding:16px 12px 0; }
+  .hubPage .gordonSvg { width:140px; }
+  .hubPage .speech { font-size:18px; min-height:80px; padding:12px; }
+  .hubPage .hint { font-size:12px; }
+  .hubPage .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .gamesHeading > span { display:none; }
+}
+@media (prefers-reduced-motion:reduce) {
+  *, *::before, *::after { scroll-behavior:auto !important; }
+  .clouds::before, .clouds::after, .wave .arm { animation:none; }
+  .hubPage .gameIconLink { transition:none; }
+}

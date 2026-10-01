@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "gordon-picture-gallery",
+  "main": "worker.js",
+  "account_id": "5ba75829ac4aa8cf4ae7a2700d9fa436",
+  "compatibility_date": "2026-09-30",
+  "workers_dev": true,
+  "r2_buckets": [{"binding": "PICTURES", "bucket_name": "gordon-picture-gallery"}],
+  "vars": {
+    "LIBRARY_ID": "gordon-family-gallery-v1",
+    "ALLOWED_ORIGINS": "https://www.gordongamehub.com,https://gordongamehub.com,https://99redder.github.io,http://127.0.0.1:8765,http://localhost:8765"
+  },
+  "observability": {"enabled":true,"traces":{"enabled":true,"head_sampling_rate":0.01}}
+}

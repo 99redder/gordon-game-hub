@@ -1,12 +1,12 @@
 {
   "name": "Gordon Game Hub",
   "short_name": "Gordon Hub",
-  "description": "A kid-friendly game hub for iPad.",
+  "description": "A playful place to color, learn, and explore with Gordon.",
   "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#87CEEB",
+  "orientation": "any",
+  "background_color": "#f8f5ee",
   "theme_color": "#0ea5e9",
   "icons": [
     {
